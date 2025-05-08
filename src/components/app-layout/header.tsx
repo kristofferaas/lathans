@@ -1,14 +1,13 @@
 import Link from "next/link";
 import { Button } from "../ui/button";
 import { MenuIcon } from "lucide-react";
+import { LathansLogo } from "./lathans-logo";
 
 export function Header() {
   return (
     <header className="container mx-auto px-4 py-6">
       <div className="flex justify-between items-center">
-        <Link href="/" className="font-bold text-xl">
-          Lathans.
-        </Link>
+        <LathansLogo href="/" />
         <div className="hidden md:flex items-center">
           <nav className="flex space-x-6">
             <Link href="#" className="text-sm text-secondary-foreground">

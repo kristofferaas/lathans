@@ -1,12 +1,13 @@
 import Link from "next/link";
+import { LathansLogo } from "./lathans-logo";
 
 export function Footer() {
   return (
     <footer className="bg-primary text-primary-foreground py-12">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          <div className="col-span-1">
-            <h2 className="text-xl font-bold mb-4">Lathans.</h2>
+          <div className="col-span-1 flex flex-col items-start gap-2">
+            <LathansLogo href="/" />
             <p className="text-sm text-primary-foreground mb-4">
               Vi overvåker alle banker til en hver tid og putter deg automatisk
               over på det billigste med laveste renter.
