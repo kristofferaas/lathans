@@ -18,17 +18,17 @@ export function Footer() {
             <ul className="space-y-2">
               <li>
                 <Link href="#" className="text-sm text-primary-foreground">
-                  Blog
+                  Blogg
                 </Link>
               </li>
               <li>
                 <Link href="#" className="text-sm text-primary-foreground">
-                  Careers
+                  Karriere
                 </Link>
               </li>
               <li>
                 <Link href="#" className="text-sm text-primary-foreground">
-                  Pricing
+                  Priser
                 </Link>
               </li>
             </ul>
@@ -39,17 +39,17 @@ export function Footer() {
             <ul className="space-y-2">
               <li>
                 <Link href="#" className="text-sm text-primary-foreground">
-                  Documentation
+                  Dokumentasjon
                 </Link>
               </li>
               <li>
                 <Link href="#" className="text-sm text-primary-foreground">
-                  Papers
+                  Artikler
                 </Link>
               </li>
               <li>
                 <Link href="#" className="text-sm text-primary-foreground">
-                  Press Conferences
+                  Pressekonferanser
                 </Link>
               </li>
             </ul>
@@ -60,22 +60,22 @@ export function Footer() {
             <ul className="space-y-2">
               <li>
                 <Link href="#" className="text-sm text-primary-foreground">
-                  Terms of Service
+                  Tjenestevilkår
                 </Link>
               </li>
               <li>
                 <Link href="#" className="text-sm text-primary-foreground">
-                  Privacy Policy
+                  Personvern
                 </Link>
               </li>
               <li>
                 <Link href="#" className="text-sm text-primary-foreground">
-                  Cookies Policy
+                  Cookie-policy
                 </Link>
               </li>
               <li>
                 <Link href="#" className="text-sm text-primary-foreground">
-                  Data Processing
+                  Databehandling
                 </Link>
               </li>
             </ul>
@@ -87,7 +87,7 @@ export function Footer() {
             © 2023 Lathans App AS.
           </p>
           <p className="text-sm text-primary-foreground">
-            All rights reserved.
+            Alle rettigheter reservert.
           </p>
         </div>
       </div>

@@ -11,7 +11,7 @@ export default function Home() {
             href="/loans"
             className="text-sm text-muted-foreground hover:text-primary hover:underline"
           >
-            View all loans
+            Se alle lån
           </Link>
         </div>
       </div>

@@ -16,10 +16,10 @@ export default function LoansPage() {
           <Link href="/">
             <Button variant="ghost" size="sm" className="gap-1">
               <ArrowLeft className="h-4 w-4" />
-              Back
+              Tilbake
             </Button>
           </Link>
-          <h1 className="text-2xl md:text-3xl font-bold ml-4">All Loans</h1>
+          <h1 className="text-2xl md:text-3xl font-bold ml-4">Alle lån</h1>
         </div>
         <Suspense fallback={<LoansLoading />}>
           <LoansList />
@@ -47,17 +47,17 @@ async function LoansList() {
           <CardContent className="p-0">
             <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x">
               <div className="p-4">
-                <p className="text-sm text-gray-500">Loan Amount</p>
+                <p className="text-sm text-gray-500">Lånebeløp</p>
                 <p className="text-lg font-semibold">{loan.loanAmount} NOK</p>
               </div>
               <div className="p-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <p className="text-sm text-gray-500">Nominal Rate</p>
+                    <p className="text-sm text-gray-500">Nominell rente</p>
                     <p className="font-medium">{loan.nominalRate}%</p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-500">Effective Rate</p>
+                    <p className="text-sm text-gray-500">Effektiv rente</p>
                     <p className="font-medium">{loan.effectiveRate}%</p>
                   </div>
                 </div>
@@ -65,11 +65,11 @@ async function LoansList() {
               <div className="p-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <p className="text-sm text-gray-500">Monthly Payment</p>
+                    <p className="text-sm text-gray-500">Månedlig betaling</p>
                     <p className="font-medium">{loan.monthlyPayment} NOK</p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-500">Installment</p>
+                    <p className="text-sm text-gray-500">Avdrag</p>
                     <p className="font-medium">{loan.installment} NOK</p>
                   </div>
                 </div>

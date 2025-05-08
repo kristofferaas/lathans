@@ -21,7 +21,7 @@ function SubmitButton() {
   const { pending } = useFormStatus();
   return (
     <Button type="submit" disabled={pending}>
-      {pending ? "Saving..." : "Save Details"}
+      {pending ? "Lagrer..." : "Lagre detaljer"}
     </Button>
   );
 }
@@ -76,9 +76,9 @@ export default function LoanDetailsForm() {
   return (
     <Card className="w-full pt-0 overflow-hidden">
       <CardHeader className="bg-primary text-white py-4">
-        <CardTitle className="text-2xl">Loan Details</CardTitle>
+        <CardTitle className="text-2xl">Låndetaljer</CardTitle>
         <CardDescription className="text-white">
-          Enter your loan information or upload a screenshot
+          Skriv inn låneinformasjonen din eller last opp et skjermbilde
         </CardDescription>
       </CardHeader>
 
@@ -92,8 +92,10 @@ export default function LoanDetailsForm() {
       >
         <div className="flex flex-col items-center justify-center gap-2">
           <FileUp className="h-10 w-10 text-primary" />
-          <p className="text-lg font-medium">Drop your screenshot here</p>
-          <p className="text-sm text-gray-500">or click to browse files</p>
+          <p className="text-lg font-medium">Slipp skjermbildet ditt her</p>
+          <p className="text-sm text-gray-500">
+            eller klikk for å bla gjennom filer
+          </p>
           <input
             type="file"
             className="hidden"
@@ -107,7 +109,7 @@ export default function LoanDetailsForm() {
               document.getElementById("screenshot-upload")?.click()
             }
           >
-            <Upload className="mr-2 h-4 w-4" /> Upload Screenshot
+            <Upload className="mr-2 h-4 w-4" /> Last opp skjermbilde
           </Button>
         </div>
       </div>
@@ -116,100 +118,98 @@ export default function LoanDetailsForm() {
         <CardContent className="space-y-6 pt-6">
           <div className="space-y-4">
             <div className="flex flex-col gap-2">
-              <Label htmlFor="loanName">Loan Name</Label>
+              <Label htmlFor="loanName">Lånenavn</Label>
               <Input
                 id="loanName"
                 name="loanName"
                 value={loanDetails.loanName}
                 onChange={handleChange}
                 required
-                placeholder="Enter loan name"
+                placeholder="Skriv inn lånenavn"
               />
             </div>
 
             <div className="flex flex-col gap-2">
-              <Label htmlFor="loanAmount">Loan Amount (NOK)</Label>
+              <Label htmlFor="loanAmount">Lånebeløp (NOK)</Label>
               <Input
                 id="loanAmount"
                 name="loanAmount"
                 value={loanDetails.loanAmount}
                 onChange={handleChange}
                 required
-                placeholder="Enter loan amount"
+                placeholder="Skriv inn lånebeløp"
               />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="flex flex-col gap-2">
-                <Label htmlFor="nominalRate">Nominal Interest Rate (%)</Label>
+                <Label htmlFor="nominalRate">Nominell rente (%)</Label>
                 <Input
                   id="nominalRate"
                   name="nominalRate"
                   value={loanDetails.nominalRate}
                   onChange={handleChange}
                   required
-                  placeholder="Enter nominal rate"
+                  placeholder="Skriv inn nominell rente"
                 />
               </div>
               <div className="flex flex-col gap-2">
-                <Label htmlFor="effectiveRate">
-                  Effective Interest Rate (%)
-                </Label>
+                <Label htmlFor="effectiveRate">Effektiv rente (%)</Label>
                 <Input
                   id="effectiveRate"
                   name="effectiveRate"
                   value={loanDetails.effectiveRate}
                   onChange={handleChange}
                   required
-                  placeholder="Enter effective rate"
+                  placeholder="Skriv inn effektiv rente"
                 />
               </div>
             </div>
 
             <div className="flex flex-col gap-2">
-              <Label htmlFor="monthlyPayment">Monthly Payment (NOK)</Label>
+              <Label htmlFor="monthlyPayment">Månedlig betaling (NOK)</Label>
               <Input
                 id="monthlyPayment"
                 name="monthlyPayment"
                 value={loanDetails.monthlyPayment}
                 onChange={handleChange}
                 required
-                placeholder="Enter monthly payment"
+                placeholder="Skriv inn månedlig betaling"
               />
             </div>
 
             <div className="pl-4 border-l-2 border-gray-200 space-y-3">
               <div className="flex flex-col gap-2">
-                <Label htmlFor="installment">Installment (NOK)</Label>
+                <Label htmlFor="installment">Avdrag (NOK)</Label>
                 <Input
                   id="installment"
                   name="installment"
                   value={loanDetails.installment}
                   onChange={handleChange}
                   required
-                  placeholder="Enter installment amount"
+                  placeholder="Skriv inn avdragsbeløp"
                 />
               </div>
               <div className="flex flex-col gap-2">
-                <Label htmlFor="interest">Interest (NOK)</Label>
+                <Label htmlFor="interest">Rente (NOK)</Label>
                 <Input
                   id="interest"
                   name="interest"
                   value={loanDetails.interest}
                   onChange={handleChange}
                   required
-                  placeholder="Enter interest amount"
+                  placeholder="Skriv inn rentebeløp"
                 />
               </div>
               <div className="flex flex-col gap-2">
-                <Label htmlFor="fees">Fees (NOK)</Label>
+                <Label htmlFor="fees">Gebyrer (NOK)</Label>
                 <Input
                   id="fees"
                   name="fees"
                   value={loanDetails.fees}
                   onChange={handleChange}
                   required
-                  placeholder="Enter fees"
+                  placeholder="Skriv inn gebyrer"
                 />
               </div>
             </div>
@@ -218,7 +218,7 @@ export default function LoanDetailsForm() {
 
         <CardFooter className="flex justify-between border-t py-6 mt-6">
           <Button type="button" variant="outline" onClick={handleReset}>
-            Reset
+            Nullstill
           </Button>
           <SubmitButton />
         </CardFooter>
