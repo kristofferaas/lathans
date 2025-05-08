@@ -216,7 +216,7 @@ export default function LoanDetailsForm() {
           </div>
         </CardContent>
 
-        <CardFooter className="flex justify-between border-t pt-6 mt-6">
+        <CardFooter className="flex justify-between border-t py-6 mt-6">
           <Button type="button" variant="outline" onClick={handleReset}>
             Reset
           </Button>
