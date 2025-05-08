@@ -10,7 +10,7 @@ import { Suspense } from "react";
 
 export default function LoansPage() {
   return (
-    <main className="min-h-screen p-4 md:p-8 bg-gray-50">
+    <main className="p-4 md:p-8">
       <div className="max-w-4xl mx-auto">
         <div className="flex items-center mb-6">
           <Link href="/">
