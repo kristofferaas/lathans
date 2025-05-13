@@ -1,7 +1,8 @@
+"use client";
+
 import Link from "next/link";
-import { Button } from "../ui/button";
-import { MenuIcon } from "lucide-react";
 import { LathansLogo } from "./lathans-logo";
+import { UserProfileButton } from "./user-profile-button";
 
 export function Header() {
   return (
@@ -21,10 +22,7 @@ export function Header() {
             </Link>
           </nav>
         </div>
-        <Button className="hidden md:block">Prøv gratis</Button>
-        <Button variant="ghost" size="icon" className="md:hidden">
-          <MenuIcon />
-        </Button>
+        <UserProfileButton />
       </div>
     </header>
   );
