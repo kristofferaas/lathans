@@ -1,16 +1,14 @@
 import { authClient } from "@/lib/auth-client";
 import { Button } from "../ui/button";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export function UserProfileButton() {
-  const handleSignIn = async () => {
-    await authClient.signIn.oauth2({
-      providerId: "vipps",
-      callbackURL: window.location.origin,
-    });
-  };
+  const router = useRouter();
 
   const handleSignOut = async () => {
     await authClient.signOut();
+    router.push("/");
   };
 
   const { data } = authClient.useSession();
@@ -23,5 +21,9 @@ export function UserProfileButton() {
     );
   }
 
-  return <Button onClick={handleSignIn}>Prøv gratis</Button>;
+  return (
+    <Button asChild>
+      <Link href="/onboarding">Prøv gratis</Link>
+    </Button>
+  );
 }
