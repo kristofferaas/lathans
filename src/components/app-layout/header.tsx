@@ -1,8 +1,6 @@
-"use client";
-
 import Link from "next/link";
 import { LathansLogo } from "./lathans-logo";
-import { UserProfileButton } from "./user-profile-button";
+import { Button } from "../ui/button";
 
 export function Header() {
   return (
@@ -22,7 +20,7 @@ export function Header() {
             </Link>
           </nav>
         </div>
-        <UserProfileButton />
+        <Button>Prøv gratis</Button>
       </div>
     </header>
   );
