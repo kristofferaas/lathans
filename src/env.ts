@@ -12,11 +12,6 @@ export const env = createEnv({
     // Turso
     TURSO_AUTH_TOKEN: z.string().min(1),
     TURSO_DATABASE_URL: z.string().min(1),
-    // BetterAuth
-    BETTER_AUTH_SECRET: z.string().min(1),
-    // Vipps
-    VIPPS_CLIENT_ID: z.string().min(1),
-    VIPPS_CLIENT_SECRET: z.string().min(1),
   },
   client: {},
   runtimeEnv: {
@@ -25,10 +20,5 @@ export const env = createEnv({
     // Turso
     TURSO_AUTH_TOKEN: process.env.TURSO_AUTH_TOKEN,
     TURSO_DATABASE_URL: process.env.TURSO_DATABASE_URL,
-    // BetterAuth
-    BETTER_AUTH_SECRET: process.env.BETTER_AUTH_SECRET,
-    // Vipps
-    VIPPS_CLIENT_ID: process.env.VIPPS_CLIENT_ID,
-    VIPPS_CLIENT_SECRET: process.env.VIPPS_CLIENT_SECRET,
   },
 });
