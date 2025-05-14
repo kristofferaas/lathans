@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { LathansLogo } from "./lathans-logo";
-import { Button } from "../ui/button";
+import { User } from "./user";
 
 export function Header() {
   return (
@@ -20,7 +20,7 @@ export function Header() {
             </Link>
           </nav>
         </div>
-        <Button>Prøv gratis</Button>
+        <User />
       </div>
     </header>
   );

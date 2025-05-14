@@ -14,34 +14,24 @@ import { parseAsInteger, useQueryState } from "nuqs";
 
 export function OnboardingFlow() {
   const [step] = useQueryState("step", parseAsInteger.withDefault(1));
-  // const { data: session, isPending } = authClient.useSession();
 
-  // if (isPending) {
-  //   return <div>Loading...</div>;
-  // }
-
-  // // Step 1: The user needs to sign in
-  // if (!session) {
-  //   return <SignInStep nextHref="/onboarding?step=2" />;
-  // }
-
-  // Step 2: The user needs to select a bank
-  if (step === 2) {
+  // Step 1: The user needs to select a bank
+  if (step === 1) {
     return <BankDetailsStep nextHref="/onboarding?step=3" />;
   }
 
-  // Step 3: Explain the loan details
-  if (step === 3) {
+  // Step 2: Explain the loan details
+  if (step === 2) {
     return <LoanDetailsExplenation nextHref="/onboarding?step=4" />;
   }
 
-  // Step 4: The user needs to enter their loan details
-  if (step === 4) {
-    return <LoanDetailsStep nextHref="/onboarding?step=5" />;
+  // Step 3: The user needs to enter their loan details
+  if (step === 3) {
+    return <LoanDetailsStep nextHref="/onboarding?step=4" />;
   }
 
-  // Step 5: The user needs to select a union
-  if (step === 5) {
+  // Step 4: The user needs to select a union
+  if (step === 4) {
     return <UnionDetailsStep nextHref="/loans" />;
   }
 
