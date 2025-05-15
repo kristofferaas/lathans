@@ -14,7 +14,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Upload, FileUp } from "lucide-react";
-import { createLoanDetails } from "@/app/actions";
+import { createLoanDetails } from "@/server/bank-loans/actions";
 import { useFormStatus } from "react-dom";
 
 function SubmitButton() {

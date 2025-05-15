@@ -1,6 +1,10 @@
 "use client";
 
 import LoanDetailsForm from "@/components/loan-details-form";
+import {
+  BankOnboarding,
+  BankOnboardingFormSchema,
+} from "@/components/onboarding/bank-onboarding";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -10,29 +14,47 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import Link from "next/link";
-import { parseAsInteger, useQueryState } from "nuqs";
+import { parseAsInteger, parseAsString, useQueryState } from "nuqs";
 
-export function OnboardingFlow() {
-  const [step] = useQueryState("step", parseAsInteger.withDefault(1));
+export function Onboarding() {
+  const [step, setStep] = useQueryState("step", parseAsInteger.withDefault(1));
+  const [bank, setBank] = useQueryState("bank", { history: "push" });
+
+  const handleBankSubmit = (data: BankOnboardingFormSchema) => {
+    setBank(data.bank, { scroll: true });
+    setStep(2);
+  };
 
   // Step 1: The user needs to select a bank
   if (step === 1) {
-    return <BankDetailsStep nextHref="/onboarding?step=3" />;
+    return <BankOnboarding onSubmit={handleBankSubmit} />;
   }
 
   // Step 2: Explain the loan details
   if (step === 2) {
-    return <LoanDetailsExplenation nextHref="/onboarding?step=4" />;
+    return (
+      <LoanDetailsExplenation
+        step={step}
+        totalSteps={4}
+        nextHref="/onboarding?step=3"
+      />
+    );
   }
 
   // Step 3: The user needs to enter their loan details
   if (step === 3) {
-    return <LoanDetailsStep nextHref="/onboarding?step=4" />;
+    return (
+      <LoanDetailsStep
+        step={step}
+        totalSteps={4}
+        nextHref="/onboarding?step=4"
+      />
+    );
   }
 
   // Step 4: The user needs to select a union
   if (step === 4) {
-    return <UnionDetailsStep nextHref="/loans" />;
+    return <UnionDetailsStep step={step} totalSteps={4} nextHref="/loans" />;
   }
 
   return (
@@ -44,62 +66,22 @@ export function OnboardingFlow() {
   );
 }
 
-// function SignInStep({ nextHref }: { nextHref: string }) {
-//   const handleSignIn = async () => {
-//     await authClient.signIn.oauth2({
-//       providerId: "vipps",
-//       callbackURL: window.location.origin + nextHref,
-//     });
-//   };
+type OnboardingStepProps = {
+  step: number;
+  totalSteps: number;
+  nextHref: string;
+};
 
-//   return (
-//     <div className="flex flex-col gap-8 items-center justify-center text-center max-w-2xl mx-auto">
-//       <h3 className="font-semibold text-2xl">Steg 1 av 5</h3>
-//       <h1 className="text-6xl font-bold italic">Logg inn</h1>
-//       <p className="text-xl font-normal">
-//         Logg inn trygt med Vipps – helt gratis. Dette sikrer både dine data og
-//         kontoen din. Ved å logge inn godtar du våre{" "}
-//         <Link href="/terms-of-service" className="underline">
-//           vilkår
-//         </Link>
-//         .
-//       </p>
-//       <Button onClick={handleSignIn} size="lg" className="px-12">
-//         Logg inn med Vipps
-//       </Button>
-//     </div>
-//   );
-// }
-
-function BankDetailsStep({ nextHref }: { nextHref: string }) {
-  return (
-    <div className="flex flex-col gap-8 items-center justify-center text-center max-w-2xl mx-auto">
-      <h3 className="font-semibold text-2xl">Steg 2 av 5</h3>
-      <h1 className="text-6xl font-bold italic">Kom i gang</h1>
-      <p className="text-xl font-normal">Hvilken bank har du boliglån i?</p>
-      <Select>
-        <SelectTrigger className="w-52">
-          <SelectValue placeholder="Velg" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="nordea">Nordea</SelectItem>
-          <SelectItem value="dnb">DNB</SelectItem>
-          <SelectItem value="storebrand">Storebrand</SelectItem>
-          <SelectItem value="sparebank1">Sparebank 1</SelectItem>
-          <SelectItem value="danske-bank">Danske Bank</SelectItem>
-        </SelectContent>
-      </Select>
-      <Button asChild>
-        <Link href={nextHref}>Gå videre</Link>
-      </Button>
-    </div>
-  );
-}
-
-function LoanDetailsExplenation({ nextHref }: { nextHref: string }) {
+function LoanDetailsExplenation({
+  step,
+  totalSteps,
+  nextHref,
+}: OnboardingStepProps) {
   return (
     <div className="flex flex-col gap-4 items-center justify-center text-center max-w-2xl mx-auto">
-      <h3 className="font-semibold text-2xl">Steg 3 av 5</h3>
+      <h3 className="font-semibold text-2xl">
+        Steg {step} av {totalSteps}
+      </h3>
       <h1 className="text-6xl font-bold italic">Info om ditt boliglån</h1>
       <p className="text-center pb-4 text-xl font-semibold">
         Slik finner du det i DNB:
@@ -122,10 +104,12 @@ function LoanDetailsExplenation({ nextHref }: { nextHref: string }) {
   );
 }
 
-function LoanDetailsStep({ nextHref }: { nextHref: string }) {
+function LoanDetailsStep({ step, totalSteps, nextHref }: OnboardingStepProps) {
   return (
     <div className="flex flex-col gap-4 items-center justify-center text-center max-w-2xl mx-auto">
-      <h3 className="font-semibold text-2xl">Steg 4 av 5</h3>
+      <h3 className="font-semibold text-2xl">
+        Steg {step} av {totalSteps}
+      </h3>
       <h1 className="text-6xl font-bold italic">Info om ditt boliglån</h1>
       <LoanDetailsForm />
       <Button asChild>
@@ -135,10 +119,12 @@ function LoanDetailsStep({ nextHref }: { nextHref: string }) {
   );
 }
 
-function UnionDetailsStep({ nextHref }: { nextHref: string }) {
+function UnionDetailsStep({ step, totalSteps, nextHref }: OnboardingStepProps) {
   return (
     <div className="flex flex-col gap-8 items-center justify-center text-center max-w-2xl mx-auto">
-      <h3 className="font-semibold text-2xl">Steg 5 av 5</h3>
+      <h3 className="font-semibold text-2xl">
+        Steg {step} av {totalSteps}
+      </h3>
       <h1 className="text-6xl font-bold italic">Medlemskap</h1>
       <p className="text-xl font-normal">
         Har du noen medlemskap vi burde vite om for å kunne gi deg de beste

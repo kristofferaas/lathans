@@ -15,3 +15,10 @@ export const loanDetails = sqliteTable("loan_details", {
   fees: text("fees").notNull(),
   createdAt: text("created_at").default(sql`CURRENT_TIMESTAMP`),
 });
+
+export const userLoanDetails = sqliteTable("user_loan_details", {
+  id: text("id")
+    .primaryKey()
+    .default(sql`(uuid4())`),
+  clerkUserId: text("clerk_user_id").notNull(),
+});

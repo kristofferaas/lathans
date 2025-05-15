@@ -1,7 +1,7 @@
 "use server";
 
-import { db } from "@/db";
-import { loanDetails } from "@/db/schema";
+import { db } from "@/server/db";
+import { loanDetails } from "@/server/db/schema";
 import { revalidatePath } from "next/cache";
 
 export async function createLoanDetails(formData: FormData) {
