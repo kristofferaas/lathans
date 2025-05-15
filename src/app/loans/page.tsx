@@ -1,8 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { db } from "@/db";
-import { loanDetails } from "@/db/schema";
+import { db } from "@/server/db";
+import { loanDetails } from "@/server/db/schema";
 import { desc } from "drizzle-orm";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";

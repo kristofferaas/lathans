@@ -1,0 +1,17 @@
+---
+description: Rules of React.js
+globs: 
+alwaysApply: false
+---
+- Always use the best practises accoirding to React version 19
+- Don't use React.forwardRef, use ref as a normal prop.
+- Avoid Effects for Data Transformation: If data can be calculated directly during rendering based on existing props or state, do not use an Effect to transform and store it in state. Calculate it directly in the component body.
+- Use useMemo for Expensive Calculations: To cache computationally expensive calculations and prevent re-computation on every render, use the useMemo Hook instead of an Effect and state.
+- Reset Component State with key Prop: To reset the entire state of a component or a component tree when a prop changes, pass a unique key prop to the component.
+- Adjust State Directly for Prop Changes: To reset or adjust a specific piece of state in response to a prop change, set it directly during rendering (e.g., const [value, setValue] = useState(initialPropValue); if (propChanged) { setValue(newPropValue); }).
+- Place Logic in Event Handlers: Code that runs in direct response to user interactions (e.g., click, submit) should be in event handlers, not Effects.
+- Effects for External System Synchronization: Use Effects to synchronize your component with systems outside of React (e.g., browser DOM, network requests, non-React widgets, timers, logging).
+- Centralize State Updates: If multiple components' states need to be updated in response to a single event, perform these updates within that event handler rather than separate Effects.
+- Lift State for Shared State Synchronization: When trying to keep state variables in different components synchronized, prefer lifting state up to a common ancestor.
+- Implement Cleanup for Data Fetching Effects: When fetching data with Effects, always include a cleanup function to handle race conditions by ignoring stale responses.
+- Extract Complex Effect Logic into Custom Hooks: For complex or reusable Effect logic (especially data fetching), encapsulate it within a custom Hook to create a more declarative and purpose-built API.

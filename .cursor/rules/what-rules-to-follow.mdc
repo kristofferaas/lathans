@@ -1,0 +1,8 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+What rules to follow:
+
+- Are you writing React code? Follow [react.mdc](mdc:.cursor/rules/react.mdc)
