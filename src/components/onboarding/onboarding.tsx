@@ -1,6 +1,5 @@
 "use client";
 
-import LoanDetailsForm from "@/components/loan-details-form";
 import {
   BankOnboarding,
   BankOnboardingFormSchema,
@@ -13,12 +12,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import Link from "next/link";
-import { parseAsInteger, parseAsString, useQueryState } from "nuqs";
+import { useRouter } from "next/navigation";
+import { parseAsInteger, useQueryState } from "nuqs";
+import { UserLoanDetails } from "./user-loan-details";
 
 export function Onboarding() {
   const [step, setStep] = useQueryState("step", parseAsInteger.withDefault(1));
-  const [bank, setBank] = useQueryState("bank", { history: "push" });
+  const [bank, setBank] = useQueryState("bank");
+  const router = useRouter();
 
   const handleBankSubmit = (data: BankOnboardingFormSchema) => {
     setBank(data.bank, { scroll: true });
@@ -26,62 +27,28 @@ export function Onboarding() {
   };
 
   // Step 1: The user needs to select a bank
-  if (step === 1) {
+  if (!bank) {
     return <BankOnboarding onSubmit={handleBankSubmit} />;
   }
 
   // Step 2: Explain the loan details
   if (step === 2) {
-    return (
-      <LoanDetailsExplenation
-        step={step}
-        totalSteps={4}
-        nextHref="/onboarding?step=3"
-      />
-    );
+    return <LoanDetailsExplenation onSubmit={() => setStep(3)} />;
   }
 
   // Step 3: The user needs to enter their loan details
   if (step === 3) {
-    return (
-      <LoanDetailsStep
-        step={step}
-        totalSteps={4}
-        nextHref="/onboarding?step=4"
-      />
-    );
+    return <UserLoanDetails onSubmit={() => setStep(4)} />;
   }
 
   // Step 4: The user needs to select a union
-  if (step === 4) {
-    return <UnionDetailsStep step={step} totalSteps={4} nextHref="/loans" />;
-  }
-
-  return (
-    <div>
-      <Button asChild>
-        <Link href="/loans">Gå til lån</Link>
-      </Button>
-    </div>
-  );
+  return <UnionDetailsStep onSubmit={() => router.push("/loans")} />;
 }
 
-type OnboardingStepProps = {
-  step: number;
-  totalSteps: number;
-  nextHref: string;
-};
-
-function LoanDetailsExplenation({
-  step,
-  totalSteps,
-  nextHref,
-}: OnboardingStepProps) {
+function LoanDetailsExplenation({ onSubmit }: { onSubmit: () => void }) {
   return (
     <div className="flex flex-col gap-4 items-center justify-center text-center max-w-2xl mx-auto">
-      <h3 className="font-semibold text-2xl">
-        Steg {step} av {totalSteps}
-      </h3>
+      <h3 className="font-semibold text-2xl">Steg 2 av 4</h3>
       <h1 className="text-6xl font-bold italic">Info om ditt boliglån</h1>
       <p className="text-center pb-4 text-xl font-semibold">
         Slik finner du det i DNB:
@@ -97,34 +64,15 @@ function LoanDetailsExplenation({
       <p className="text-xl font-semibold">
         Ta skjermbilde av dette og last det opp til oss i neste steg.
       </p>
-      <Button asChild>
-        <Link href={nextHref}>Gå videre</Link>
-      </Button>
+      <Button onClick={onSubmit}>Gå videre</Button>
     </div>
   );
 }
 
-function LoanDetailsStep({ step, totalSteps, nextHref }: OnboardingStepProps) {
-  return (
-    <div className="flex flex-col gap-4 items-center justify-center text-center max-w-2xl mx-auto">
-      <h3 className="font-semibold text-2xl">
-        Steg {step} av {totalSteps}
-      </h3>
-      <h1 className="text-6xl font-bold italic">Info om ditt boliglån</h1>
-      <LoanDetailsForm />
-      <Button asChild>
-        <Link href={nextHref}>Gå videre</Link>
-      </Button>
-    </div>
-  );
-}
-
-function UnionDetailsStep({ step, totalSteps, nextHref }: OnboardingStepProps) {
+function UnionDetailsStep({ onSubmit }: { onSubmit: () => void }) {
   return (
     <div className="flex flex-col gap-8 items-center justify-center text-center max-w-2xl mx-auto">
-      <h3 className="font-semibold text-2xl">
-        Steg {step} av {totalSteps}
-      </h3>
+      <h3 className="font-semibold text-2xl">Steg 4 av 4</h3>
       <h1 className="text-6xl font-bold italic">Medlemskap</h1>
       <p className="text-xl font-normal">
         Har du noen medlemskap vi burde vite om for å kunne gi deg de beste
@@ -142,9 +90,7 @@ function UnionDetailsStep({ step, totalSteps, nextHref }: OnboardingStepProps) {
           <SelectItem value="akademikerne">Akademikerne</SelectItem>
         </SelectContent>
       </Select>
-      <Button asChild>
-        <Link href={nextHref}>Gå videre</Link>
-      </Button>
+      <Button onClick={onSubmit}>Gå videre</Button>
     </div>
   );
 }
