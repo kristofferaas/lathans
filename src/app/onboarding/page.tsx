@@ -3,7 +3,7 @@ import {
   OnboardingAction,
 } from "@/components/onboarding/onboarding";
 import { db } from "@/server/db";
-import { loanDetails } from "@/server/db/schema";
+import { userLoanDetails } from "@/server/db/schema";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
@@ -16,15 +16,12 @@ const onboardingAction: OnboardingAction = async (data) => {
     throw new Error("User not found");
   }
 
-  await db.insert(loanDetails).values({
-    loanName: data.loanName,
-    loanAmount: data.loanAmount.toString(),
-    nominalRate: data.nominalRate.toString(),
-    effectiveRate: data.effectiveRate.toString(),
-    monthlyPayment: data.monthlyPayment.toString(),
-    installment: data.installment.toString(),
-    interest: data.interest.toString(),
-    fees: data.fees.toString(),
+  await db.insert(userLoanDetails).values({
+    clerkUserId: userId,
+    name: data.loanName,
+    amount: data.loanAmount,
+    nominalRate: data.nominalRate,
+    termYears: data.termYears,
   });
 
   redirect("/loans");
@@ -33,7 +30,7 @@ const onboardingAction: OnboardingAction = async (data) => {
 export default function Home() {
   return (
     <main className="p-4 md:p-8">
-      <div className="max-w-3xl mx-auto mt-16 mb-48">
+      <div className="mx-auto mt-16 mb-48 max-w-3xl">
         <Suspense fallback={<div>Loading...</div>}>
           <Onboarding action={onboardingAction} />
         </Suspense>

@@ -28,11 +28,7 @@ export const loanDetailsSchema = z.object({
   loanName: z.string().min(1, "Lånenavn er påkrevd"),
   loanAmount: z.coerce.number({ message: "Lånebeløp er påkrevd" }),
   nominalRate: z.coerce.number({ message: "Nominell rente er påkrevd" }),
-  effectiveRate: z.coerce.number({ message: "Effektiv rente er påkrevd" }),
-  monthlyPayment: z.coerce.number({ message: "Månedlig betaling er påkrevd" }),
-  installment: z.coerce.number({ message: "Avdrag er påkrevd" }),
-  interest: z.coerce.number({ message: "Rente er påkrevd" }),
-  fees: z.coerce.number({ message: "Gebyrer er påkrevd" }),
+  termYears: z.coerce.number({ message: "Løpetid er påkrevd" }),
 });
 
 export type LoanDetailsFormSchema = z.infer<typeof loanDetailsSchema>;
@@ -43,8 +39,8 @@ export function UserLoanDetails({
   onSubmit: (data: LoanDetailsFormSchema) => void;
 }) {
   return (
-    <div className="flex flex-col gap-4 items-center justify-center text-center max-w-2xl mx-auto">
-      <h3 className="font-semibold text-2xl">Steg 3 av 4</h3>
+    <div className="mx-auto flex max-w-2xl flex-col items-center justify-center gap-4 text-center">
+      <h3 className="text-2xl font-semibold">Steg 3 av 4</h3>
       <h1 className="text-6xl font-bold italic">Info om ditt boliglån</h1>
       <LoanDetailsForm onSubmit={onSubmit} />
     </div>
@@ -83,8 +79,8 @@ export default function LoanDetailsForm({
   };
 
   return (
-    <Card className="w-full pt-0 overflow-hidden">
-      <CardHeader className="bg-primary text-white py-4">
+    <Card className="w-full overflow-hidden pt-0">
+      <CardHeader className="bg-primary py-4 text-white">
         <CardTitle className="text-2xl">Låndetaljer</CardTitle>
         <CardDescription className="text-white">
           Skriv inn låneinformasjonen din eller last opp et skjermbilde
@@ -92,7 +88,7 @@ export default function LoanDetailsForm({
       </CardHeader>
 
       <div
-        className={`mx-4 mt-6 border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
+        className={`mx-4 mt-6 rounded-lg border-2 border-dashed p-6 text-center transition-colors ${
           isDragging ? "border-primary bg-primary/10" : "border-gray-300"
         }`}
         onDragOver={handleDragOver}
@@ -100,7 +96,7 @@ export default function LoanDetailsForm({
         onDrop={handleDrop}
       >
         <div className="flex flex-col items-center justify-center gap-2">
-          <FileUp className="h-10 w-10 text-primary" />
+          <FileUp className="text-primary h-10 w-10" />
           <p className="text-lg font-medium">Slipp skjermbildet ditt her</p>
           <p className="text-sm text-gray-500">
             eller klikk for å bla gjennom filer
@@ -161,7 +157,7 @@ export default function LoanDetailsForm({
                 )}
               />
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <FormField
                   control={form.control}
                   name="nominalRate"
@@ -182,6 +178,24 @@ export default function LoanDetailsForm({
 
                 <FormField
                   control={form.control}
+                  name="termYears"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Løpetid (år)</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          placeholder="Skriv inn løpetid"
+                          type="number"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {/* <FormField
+                  control={form.control}
                   name="effectiveRate"
                   render={({ field }) => (
                     <FormItem>
@@ -196,10 +210,10 @@ export default function LoanDetailsForm({
                       <FormMessage />
                     </FormItem>
                   )}
-                />
+                /> */}
               </div>
 
-              <FormField
+              {/* <FormField
                 control={form.control}
                 name="monthlyPayment"
                 render={({ field }) => (
@@ -217,9 +231,9 @@ export default function LoanDetailsForm({
                     <FormMessage />
                   </FormItem>
                 )}
-              />
+              /> */}
 
-              <div className="pl-4 border-l-2 border-gray-200 space-y-3">
+              {/* <div className="space-y-3 border-l-2 border-gray-200 pl-4">
                 <FormField
                   control={form.control}
                   name="installment"
@@ -279,11 +293,11 @@ export default function LoanDetailsForm({
                     </FormItem>
                   )}
                 />
-              </div>
+              </div> */}
             </div>
           </CardContent>
 
-          <CardFooter className="flex justify-between border-t py-6 mt-6">
+          <CardFooter className="mt-6 flex justify-between border-t py-6">
             <Button type="button" variant="outline" onClick={handleReset}>
               Nullstill
             </Button>
