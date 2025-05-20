@@ -12,20 +12,23 @@ import {
   UserLoanDetails,
   loanDetailsSchema,
 } from "./user-loan-details";
+import { useMutation } from "convex/react";
+import { api } from "@convex/_generated/api";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
-type OnboardingActionData = BankOnboardingFormSchema &
-  UnionOnboardingFormSchema &
-  LoanDetailsFormSchema;
-
-export type OnboardingAction = (data: OnboardingActionData) => void;
-
-export function Onboarding({ action }: { action: OnboardingAction }) {
+export function Onboarding() {
+  const router = useRouter();
   const [step, setStep] = useQueryState("step", parseAsInteger.withDefault(1));
   const [bank, setBank] = useQueryState("bank");
   const [loanDetails, setLoanDetails] = useQueryState(
     "loanDetails",
-    parseAsJson(loanDetailsSchema.parse)
+    parseAsJson(loanDetailsSchema.parse),
   );
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const saveLoanDetails = useMutation(api.onboarding.saveUserLoanDetails);
 
   const handleBankSubmit = (data: BankOnboardingFormSchema) => {
     setBank(data.bank);
@@ -41,14 +44,28 @@ export function Onboarding({ action }: { action: OnboardingAction }) {
     setStep(4, { scroll: true });
   };
 
-  const handleUnionSubmit = ({ union }: UnionOnboardingFormSchema) => {
+  const handleUnionSubmit = async ({ union }: UnionOnboardingFormSchema) => {
     if (bank && union && loanDetails) {
-      const data: OnboardingActionData = {
-        union,
-        bank: bank as BankOnboardingFormSchema["bank"],
-        ...loanDetails,
+      // Construct the data for the mutation based on loanDetails
+      // The mutation api.onboarding.saveUserLoanDetails expects:
+      // { name: string, amount: number, nominalRate: number, termYears: number }
+      const mutationData = {
+        name: loanDetails.loanName,
+        amount: loanDetails.loanAmount,
+        nominalRate: loanDetails.nominalRate,
+        termYears: loanDetails.termYears,
       };
-      action(data);
+      setIsLoading(true);
+      setError(null);
+      try {
+        await saveLoanDetails(mutationData);
+        router.push("/loans");
+      } catch (e) {
+        console.error("Failed to save loan details:", e);
+        setError(e instanceof Error ? e.message : "An unknown error occurred.");
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 
@@ -68,18 +85,25 @@ export function Onboarding({ action }: { action: OnboardingAction }) {
   }
 
   // Step 4: The user needs to select a union
-  return <UnionOnboarding onSubmit={handleUnionSubmit} />;
+  // Consider disabling the button in UnionOnboarding if isLoading is true
+  return (
+    <UnionOnboarding
+      onSubmit={handleUnionSubmit}
+      isLoading={isLoading}
+      errorMessage={error}
+    />
+  );
 }
 
 function LoanDetailsExplenation({ onSubmit }: { onSubmit: () => void }) {
   return (
-    <div className="flex flex-col gap-4 items-center justify-center text-center max-w-2xl mx-auto">
-      <h3 className="font-semibold text-2xl">Steg 2 av 4</h3>
+    <div className="mx-auto flex max-w-2xl flex-col items-center justify-center gap-4 text-center">
+      <h3 className="text-2xl font-semibold">Steg 2 av 4</h3>
       <h1 className="text-6xl font-bold italic">Info om ditt boliglån</h1>
-      <p className="text-center pb-4 text-xl font-semibold">
+      <p className="pb-4 text-center text-xl font-semibold">
         Slik finner du det i DNB:
       </p>
-      <ol className="list-decimal list-inside space-y-2 text-xl ">
+      <ol className="list-inside list-decimal space-y-2 text-xl">
         <li>Logg inn i nettbanken og gå i menyen øverst</li>
         <li className="text-xl">
           Trykk på <span className="underline">se mine lån</span> &gt;{" "}

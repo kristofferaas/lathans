@@ -28,8 +28,12 @@ export type UnionOnboardingFormSchema = z.infer<typeof unionOnboardingSchema>;
 
 export function UnionOnboarding({
   onSubmit,
+  isLoading,
+  errorMessage,
 }: {
   onSubmit: (data: UnionOnboardingFormSchema) => void;
+  isLoading?: boolean;
+  errorMessage?: string | null;
 }) {
   const form = useForm<UnionOnboardingFormSchema>({
     resolver: zodResolver(unionOnboardingSchema),
@@ -39,9 +43,9 @@ export function UnionOnboarding({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="flex flex-col gap-8 items-center justify-center text-center max-w-2xl mx-auto"
+        className="mx-auto flex max-w-2xl flex-col items-center justify-center gap-8 text-center"
       >
-        <h3 className="font-semibold text-2xl">Steg 4 av 4</h3>
+        <h3 className="text-2xl font-semibold">Steg 4 av 4</h3>
         <h1 className="text-6xl font-bold italic">Medlemskap</h1>
         <p className="text-xl font-normal">
           Har du noen medlemskap vi burde vite om for å kunne gi deg de beste
@@ -52,7 +56,11 @@ export function UnionOnboarding({
           name="union"
           render={({ field }) => (
             <FormItem className="flex flex-col items-center">
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <Select
+                onValueChange={field.onChange}
+                defaultValue={field.value}
+                disabled={isLoading}
+              >
                 <FormControl>
                   <SelectTrigger className="w-52">
                     <SelectValue placeholder="Velg" />
@@ -70,7 +78,10 @@ export function UnionOnboarding({
             </FormItem>
           )}
         />
-        <Button type="submit">Fullfør</Button> {/* Changed button text */}
+        {errorMessage && <p className="text-sm text-red-500">{errorMessage}</p>}
+        <Button type="submit" disabled={isLoading}>
+          {isLoading ? "Fullfører..." : "Fullfør"}
+        </Button>
       </form>
     </Form>
   );

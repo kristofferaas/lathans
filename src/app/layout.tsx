@@ -5,6 +5,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
+import { ConvexClientProvider } from "@/components/app-layout/convex-client-provider";
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -31,13 +33,15 @@ export default function RootLayout({
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
-          <NuqsAdapter>
-            <div className="h-dvh flex flex-col">
-              <Header />
-              <div className="flex-grow">{children}</div>
-              <Footer />
-            </div>
-          </NuqsAdapter>
+          <ConvexClientProvider>
+            <NuqsAdapter>
+              <div className="flex h-dvh flex-col">
+                <Header />
+                <div className="flex-grow">{children}</div>
+                <Footer />
+              </div>
+            </NuqsAdapter>
+          </ConvexClientProvider>
         </body>
       </html>
     </ClerkProvider>

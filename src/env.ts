@@ -9,16 +9,13 @@ export const env = createEnv({
     NODE_ENV: z
       .enum(["development", "production", "test"])
       .default("development"),
-    // Turso
-    TURSO_AUTH_TOKEN: z.string().min(1),
-    TURSO_DATABASE_URL: z.string().min(1),
   },
-  client: {},
+  client: {
+    NEXT_PUBLIC_CONVEX_URL: z.string().url(),
+  },
   runtimeEnv: {
     // General
     NODE_ENV: process.env.NODE_ENV,
-    // Turso
-    TURSO_AUTH_TOKEN: process.env.TURSO_AUTH_TOKEN,
-    TURSO_DATABASE_URL: process.env.TURSO_DATABASE_URL,
+    NEXT_PUBLIC_CONVEX_URL: process.env.NEXT_PUBLIC_CONVEX_URL,
   },
 });

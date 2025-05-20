@@ -4,7 +4,7 @@ import Link from "next/link";
 export default async function Home() {
   return (
     <main className="p-4 md:p-8">
-      <div className="max-w-3xl mx-auto flex justify-center">
+      <div className="mx-auto flex max-w-3xl justify-center">
         <TryForFree />
       </div>
     </main>
