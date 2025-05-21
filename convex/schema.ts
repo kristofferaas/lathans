@@ -8,7 +8,7 @@ export default defineSchema({
     amount: v.number(),
     nominalRate: v.number(),
     termYears: v.number(),
-  }).index("by_clerkUserId", ["clerkUserId"]), // Optional: Index for querying by clerkUserId
+  }).index("by_clerkUserId", ["clerkUserId"]),
 
   principalMortgageOffers: defineTable({
     name: v.string(),
@@ -16,4 +16,15 @@ export default defineSchema({
     // Add any other fields that principalMortgageOffers might have from your Drizzle schema
     // For now, these are the ones visibly used in createComparisonLoans for offer-specific data
   }),
+
+  userLoan: defineTable({
+    userId: v.string(),
+    bank: v.optional(v.string()),
+    screenshotStorageId: v.optional(v.id("_storage")),
+    loanName: v.optional(v.string()),
+    loanAmount: v.optional(v.number()),
+    nominalRate: v.optional(v.number()),
+    termYears: v.optional(v.number()),
+    union: v.optional(v.string()),
+  }).index("by_userId", ["userId"]),
 });

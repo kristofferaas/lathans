@@ -13,6 +13,8 @@ import type {
   FilterApi,
   FunctionReference,
 } from "convex/server";
+import type * as extractLoanInfoFromScreenshot from "../extractLoanInfoFromScreenshot.js";
+import type * as files from "../files.js";
 import type * as loans from "../loans.js";
 import type * as onboarding from "../onboarding.js";
 
@@ -25,6 +27,8 @@ import type * as onboarding from "../onboarding.js";
  * ```
  */
 declare const fullApi: ApiFromModules<{
+  extractLoanInfoFromScreenshot: typeof extractLoanInfoFromScreenshot;
+  files: typeof files;
   loans: typeof loans;
   onboarding: typeof onboarding;
 }>;
