@@ -47,6 +47,45 @@ export function UploadScreenshotOnboarding({
     }
   }, [existingScreenshotStorageId]);
 
+  // Helper function to convert a File to a PNG Blob
+  const convertToPngClientSide = (file: File): Promise<Blob> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement("canvas");
+          canvas.width = img.width;
+          canvas.height = img.height;
+          const ctx = canvas.getContext("2d");
+          if (!ctx) {
+            return reject(new Error("Failed to get canvas context"));
+          }
+          ctx.drawImage(img, 0, 0);
+          canvas.toBlob(
+            (blob) => {
+              if (blob) {
+                resolve(blob);
+              } else {
+                reject(new Error("Canvas toBlob returned null"));
+              }
+            },
+            "image/png",
+            1, // qualityArgument (1 for best quality)
+          );
+        };
+        img.onerror = (err) => reject(err);
+        if (event.target?.result && typeof event.target.result === "string") {
+          img.src = event.target.result;
+        } else {
+          reject(new Error("FileReader did not produce a valid image source."));
+        }
+      };
+      reader.onerror = (err) => reject(err);
+      reader.readAsDataURL(file);
+    });
+  };
+
   const uploadFile = async (file: File) => {
     if (!file) return;
     if (!userId) {
@@ -61,10 +100,14 @@ export function UploadScreenshotOnboarding({
 
     try {
       const postUrl = await generateUploadUrl();
+
+      // Convert file to PNG before uploading
+      const pngBlob = await convertToPngClientSide(file);
+
       const result = await fetch(postUrl, {
         method: "POST",
-        headers: { "Content-Type": file.type },
-        body: file,
+        headers: { "Content-Type": "image/png" }, // Explicitly set to image/png
+        body: pngBlob, // Upload the PNG blob
       });
       const json = await result.json();
       if (!result.ok) {
