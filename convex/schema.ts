@@ -2,14 +2,6 @@ import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 
 export default defineSchema({
-  userLoanDetails: defineTable({
-    clerkUserId: v.string(),
-    name: v.string(),
-    amount: v.number(),
-    nominalRate: v.number(),
-    termYears: v.number(),
-  }).index("by_clerkUserId", ["clerkUserId"]),
-
   principalMortgageOffers: defineTable({
     name: v.string(),
     nominalRate: v.number(),
