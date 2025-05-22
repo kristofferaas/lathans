@@ -16,7 +16,6 @@ import type {
 import type * as extractLoanInfoFromScreenshot from "../extractLoanInfoFromScreenshot.js";
 import type * as files from "../files.js";
 import type * as loans from "../loans.js";
-import type * as migrations from "../migrations.js";
 import type * as onboarding from "../onboarding.js";
 
 /**
@@ -31,7 +30,6 @@ declare const fullApi: ApiFromModules<{
   extractLoanInfoFromScreenshot: typeof extractLoanInfoFromScreenshot;
   files: typeof files;
   loans: typeof loans;
-  migrations: typeof migrations;
   onboarding: typeof onboarding;
 }>;
 export declare const api: FilterApi<
