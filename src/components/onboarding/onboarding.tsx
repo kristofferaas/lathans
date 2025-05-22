@@ -4,117 +4,189 @@ import {
   BankOnboarding,
   BankOnboardingFormSchema,
 } from "@/components/onboarding/bank-onboarding";
-import { Button } from "@/components/ui/button";
-import { parseAsInteger, parseAsJson, useQueryState } from "nuqs";
+import { parseAsInteger, useQueryState } from "nuqs";
 import { UnionOnboarding, UnionOnboardingFormSchema } from "./union-onboarding";
-import {
-  LoanDetailsFormSchema,
-  UserLoanDetails,
-  loanDetailsSchema,
-} from "./user-loan-details";
-import { useMutation } from "convex/react";
+import { LoanDetailsFormSchema, UserLoanDetails } from "./user-loan-details";
+import { UploadScreenshotOnboarding } from "./upload-screenshot-onboarding";
+import { useMutation, useQuery } from "convex/react";
 import { api } from "@convex/_generated/api";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { Id } from "@convex/_generated/dataModel";
 
 export function Onboarding() {
   const router = useRouter();
   const [step, setStep] = useQueryState("step", parseAsInteger.withDefault(1));
-  const [bank, setBank] = useQueryState("bank");
-  const [loanDetails, setLoanDetails] = useQueryState(
-    "loanDetails",
-    parseAsJson(loanDetailsSchema.parse),
-  );
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const saveLoanDetails = useMutation(api.onboarding.saveUserLoanDetails);
+  const userLoanData = useQuery(api.onboarding.getUserLoan);
 
-  const handleBankSubmit = (data: BankOnboardingFormSchema) => {
-    setBank(data.bank);
-    setStep(2, { scroll: true });
-  };
+  const saveBankMutation = useMutation(api.onboarding.saveBank);
+  const saveScreenshotMutation = useMutation(api.onboarding.saveScreenshot);
+  const saveLoanDetailsMutation = useMutation(api.onboarding.saveLoanDetails);
+  const saveUnionMutation = useMutation(api.onboarding.saveUnion);
 
-  const handleLoanExplenationSubmit = () => {
-    setStep(3, { scroll: true });
-  };
+  const [userLoanId, setUserLoanId] = useState<Id<"userLoan"> | null>(null);
 
-  const handleLoanDetailsSubmit = (data: LoanDetailsFormSchema) => {
-    setLoanDetails(data);
-    setStep(4, { scroll: true });
-  };
+  useEffect(() => {
+    if (userLoanData) {
+      setUserLoanId(userLoanData._id);
+    }
+  }, [userLoanData]);
 
-  const handleUnionSubmit = async ({ union }: UnionOnboardingFormSchema) => {
-    if (bank && union && loanDetails) {
-      // Construct the data for the mutation based on loanDetails
-      // The mutation api.onboarding.saveUserLoanDetails expects:
-      // { name: string, amount: number, nominalRate: number, termYears: number }
-      const mutationData = {
-        name: loanDetails.loanName,
-        amount: loanDetails.loanAmount,
-        nominalRate: loanDetails.nominalRate,
-        termYears: loanDetails.termYears,
-      };
-      setIsLoading(true);
-      setError(null);
-      try {
-        await saveLoanDetails(mutationData);
-        router.push("/loans");
-      } catch (e) {
-        console.error("Failed to save loan details:", e);
-        setError(e instanceof Error ? e.message : "An unknown error occurred.");
-      } finally {
-        setIsLoading(false);
-      }
+  const handleBankSubmit = async (data: BankOnboardingFormSchema) => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const id = await saveBankMutation({ bank: data.bank });
+      setUserLoanId(id);
+      setStep(2, { scroll: true, history: "push" });
+    } catch (e) {
+      console.error("Failed to save bank details:", e);
+      setError(e instanceof Error ? e.message : "An unknown error occurred.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  // Step 1: The user needs to select a bank
-  if (!bank) {
-    return <BankOnboarding onSubmit={handleBankSubmit} />;
+  const handleScreenshotUploadSubmit = async (storageId: string | null) => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      if (!userLoanId && storageId) {
+        throw new Error(
+          "Cannot save screenshot without existing loan details record.",
+        );
+      }
+      if (storageId) {
+        await saveScreenshotMutation({
+          screenshotStorageId: storageId as Id<"_storage"> | undefined,
+        });
+      }
+      setStep(3, { scroll: true, history: "push" });
+    } catch (e) {
+      console.error("Failed to save screenshot details:", e);
+      setError(e instanceof Error ? e.message : "An unknown error occurred.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleLoanDetailsSubmit = async (data: LoanDetailsFormSchema) => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      if (!userLoanId) {
+        throw new Error(
+          "Cannot save loan details without existing loan details record.",
+        );
+      }
+      await saveLoanDetailsMutation({
+        loanName: data.loanName,
+        loanAmount: data.loanAmount,
+        nominalRate: data.nominalRate,
+        termYears: data.termYears,
+      });
+      setStep(4, { scroll: true, history: "push" });
+    } catch (e) {
+      console.error("Failed to save loan details:", e);
+      setError(e instanceof Error ? e.message : "An unknown error occurred.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleUnionSubmit = async ({ union }: UnionOnboardingFormSchema) => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      if (!userLoanId) {
+        throw new Error(
+          "Cannot save union without existing loan details record.",
+        );
+      }
+      if (!union) {
+        setError("Union selection is required.");
+        setIsLoading(false);
+        return;
+      }
+      await saveUnionMutation({ union });
+      router.push("/loans");
+    } catch (e) {
+      console.error("Failed to save union details:", e);
+      setError(e instanceof Error ? e.message : "An unknown error occurred.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  if (step === 1) {
+    return (
+      <BankOnboarding
+        onSubmit={handleBankSubmit}
+        initialData={{
+          bank:
+            (userLoanData?.bank as
+              | BankOnboardingFormSchema["bank"]
+              | undefined) ?? undefined,
+        }}
+        isLoading={isLoading}
+        errorMessage={error}
+      />
+    );
   }
 
-  // Step 2: Explain the loan details
   if (step === 2) {
-    return <LoanDetailsExplenation onSubmit={handleLoanExplenationSubmit} />;
+    return (
+      <UploadScreenshotOnboarding
+        onSubmit={handleScreenshotUploadSubmit}
+        isLoading={isLoading}
+        errorMessage={error}
+        existingScreenshotStorageId={userLoanData?.screenshotStorageId ?? null}
+      />
+    );
   }
 
-  // Step 3: The user needs to enter their loan details
   if (step === 3) {
-    return <UserLoanDetails onSubmit={handleLoanDetailsSubmit} />;
+    return (
+      <UserLoanDetails
+        onSubmit={handleLoanDetailsSubmit}
+        initialData={
+          userLoanData
+            ? {
+                loanName: userLoanData.loanName ?? "",
+                loanAmount: userLoanData.loanAmount ?? undefined,
+                nominalRate: userLoanData.nominalRate ?? undefined,
+                termYears: userLoanData.termYears ?? undefined,
+              }
+            : undefined
+        }
+        isLoading={isLoading}
+        errorMessage={error}
+      />
+    );
   }
 
-  // Step 4: The user needs to select a union
-  // Consider disabling the button in UnionOnboarding if isLoading is true
-  return (
-    <UnionOnboarding
-      onSubmit={handleUnionSubmit}
-      isLoading={isLoading}
-      errorMessage={error}
-    />
-  );
-}
+  if (step === 4) {
+    return (
+      <UnionOnboarding
+        onSubmit={handleUnionSubmit}
+        isLoading={isLoading}
+        errorMessage={error}
+        initialData={{
+          union:
+            (userLoanData?.union as
+              | UnionOnboardingFormSchema["union"]
+              | undefined) ?? undefined,
+        }}
+      />
+    );
+  }
 
-function LoanDetailsExplenation({ onSubmit }: { onSubmit: () => void }) {
-  return (
-    <div className="mx-auto flex max-w-2xl flex-col items-center justify-center gap-4 text-center">
-      <h3 className="text-2xl font-semibold">Steg 2 av 4</h3>
-      <h1 className="text-6xl font-bold italic">Info om ditt boliglån</h1>
-      <p className="pb-4 text-center text-xl font-semibold">
-        Slik finner du det i DNB:
-      </p>
-      <ol className="list-inside list-decimal space-y-2 text-xl">
-        <li>Logg inn i nettbanken og gå i menyen øverst</li>
-        <li className="text-xl">
-          Trykk på <span className="underline">se mine lån</span> &gt;{" "}
-          <span className="underline">boliglån</span> &gt;{" "}
-          <span className="underline">se info</span>
-        </li>
-      </ol>
-      <p className="text-xl font-semibold">
-        Ta skjermbilde av dette og last det opp til oss i neste steg.
-      </p>
-      <Button onClick={onSubmit}>Gå videre</Button>
-    </div>
-  );
+  if (userLoanData === undefined) {
+    return <div>Loading onboarding status...</div>;
+  }
+
+  return <div>Loading or invalid step...</div>;
 }

@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { calculateYearlyFixedRateMortgagePayment } from "@/lib/mortgage";
 import { api } from "@convex/_generated/api";
-import { Doc } from "@convex/_generated/dataModel";
+import { Doc, Id } from "@convex/_generated/dataModel";
 import { useQuery } from "convex/react";
 import { useAuth } from "@clerk/nextjs";
 
@@ -27,31 +27,42 @@ type ComparisonLoan = {
   actualYearlyPayment: number;
 };
 
-type UserLoanDetailsDoc = Doc<"userLoanDetails">;
+type UserLoanDoc = Doc<"userLoan">;
+type ValidatedUserLoan = UserLoanDoc & {
+  _id: Id<"userLoan">;
+  loanName: string;
+  loanAmount: number;
+  nominalRate: number;
+  termYears: number;
+};
+
 type PrincipalMortgageOfferDoc = Doc<"principalMortgageOffers">;
 
 // Helper function
 function createComparisonLoans(
   offers: PrincipalMortgageOfferDoc[],
-  userLoan: UserLoanDetailsDoc,
+  userLoan: ValidatedUserLoan,
 ): ComparisonLoan[] {
   const userActualYearlyPayment = calculateYearlyFixedRateMortgagePayment(
-    userLoan.amount,
+    userLoan.loanAmount,
     userLoan.nominalRate / 12,
     userLoan.termYears,
   );
 
   const comparisonLoans: ComparisonLoan[] = [
     {
-      ...userLoan,
       id: userLoan._id,
       isCurrentDeal: true,
+      name: userLoan.loanName,
+      nominalRate: userLoan.nominalRate,
+      termYears: userLoan.termYears,
+      amount: userLoan.loanAmount,
       annualDifference: 0,
       actualYearlyPayment: userActualYearlyPayment,
     },
     ...offers.map((offer) => {
       const offerActualYearlyPayment = calculateYearlyFixedRateMortgagePayment(
-        userLoan.amount,
+        userLoan.loanAmount,
         offer.nominalRate / 12,
         userLoan.termYears,
       );
@@ -62,7 +73,7 @@ function createComparisonLoans(
         name: offer.name,
         nominalRate: offer.nominalRate,
         termYears: userLoan.termYears,
-        amount: userLoan.amount,
+        amount: userLoan.loanAmount,
         actualYearlyPayment: offerActualYearlyPayment,
       };
     }),
@@ -158,7 +169,7 @@ const DetailItem: React.FC<DetailItemProps> = ({ label, value, type }) => {
 export function LoansList() {
   const { userId, isLoaded: authIsLoaded } = useAuth();
 
-  const userLoan = useQuery(api.loans.getUserLoanDetail, userId ? {} : "skip");
+  const userLoanData = useQuery(api.loans.getUserLoan, userId ? {} : "skip");
 
   const principalMortgageOffers = useQuery(
     api.loans.listPrincipalMortgageOffers,
@@ -167,10 +178,10 @@ export function LoansList() {
 
   if (
     !authIsLoaded ||
-    userLoan === undefined ||
+    userLoanData === undefined ||
     principalMortgageOffers === undefined
   ) {
-    return null;
+    return <LoansLoading />;
   }
 
   if (!userId) {
@@ -184,7 +195,7 @@ export function LoansList() {
     );
   }
 
-  if (userLoan === null) {
+  if (userLoanData === null) {
     return (
       <Alert variant="destructive">
         <AlertTitle>Lånedetaljer mangler</AlertTitle>
@@ -196,16 +207,43 @@ export function LoansList() {
     );
   }
 
-  if (!userLoan || !principalMortgageOffers) {
+  if (
+    userLoanData.loanName === null ||
+    userLoanData.loanName === undefined ||
+    userLoanData.loanAmount === null ||
+    userLoanData.loanAmount === undefined ||
+    userLoanData.nominalRate === null ||
+    userLoanData.nominalRate === undefined ||
+    userLoanData.termYears === null ||
+    userLoanData.termYears === undefined
+  ) {
     console.error(
-      "Unexpected state: userLoan or principalMortgageOffers are not available for comparison.",
-      { userLoan, principalMortgageOffers },
+      "User loan data is missing essential fields for comparison.",
+      { userLoanData },
+    );
+    return (
+      <Alert variant="destructive">
+        <AlertTitle>Ufullstendige Lånedetaljer</AlertTitle>
+        <AlertDescription>
+          Dine lagrede lånedetaljer mangler nødvendig informasjon (navn, beløp,
+          rente, eller løpetid) for å kunne lage en sammenligning.
+        </AlertDescription>
+      </Alert>
+    );
+  }
+
+  const validatedUserLoan = userLoanData as ValidatedUserLoan;
+
+  if (!principalMortgageOffers) {
+    console.error(
+      "Unexpected state: principalMortgageOffers are not available for comparison.",
+      { principalMortgageOffers },
     );
     return (
       <Alert variant="destructive">
         <AlertTitle>Feil</AlertTitle>
         <AlertDescription>
-          Kunne ikke laste nødvendig lånedata for sammenligning.
+          Kunne ikke laste tilbud for sammenligning.
         </AlertDescription>
       </Alert>
     );
@@ -213,7 +251,7 @@ export function LoansList() {
 
   const comparisonLoans = createComparisonLoans(
     principalMortgageOffers,
-    userLoan,
+    validatedUserLoan,
   );
 
   return (

@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { useEffect } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -26,18 +27,30 @@ export const unionOnboardingSchema = z.object({
 
 export type UnionOnboardingFormSchema = z.infer<typeof unionOnboardingSchema>;
 
-export function UnionOnboarding({
-  onSubmit,
-  isLoading,
-  errorMessage,
-}: {
+interface UnionOnboardingProps {
   onSubmit: (data: UnionOnboardingFormSchema) => void;
+  initialData?: Partial<UnionOnboardingFormSchema>;
   isLoading?: boolean;
   errorMessage?: string | null;
-}) {
+}
+
+export function UnionOnboarding({
+  onSubmit,
+  initialData,
+  isLoading,
+  errorMessage,
+}: UnionOnboardingProps) {
   const form = useForm<UnionOnboardingFormSchema>({
     resolver: zodResolver(unionOnboardingSchema),
   });
+
+  useEffect(() => {
+    if (initialData) {
+      form.reset(initialData);
+    } else {
+      form.reset({ union: undefined });
+    }
+  }, [initialData, form]);
 
   return (
     <Form {...form}>
@@ -58,7 +71,7 @@ export function UnionOnboarding({
             <FormItem className="flex flex-col items-center">
               <Select
                 onValueChange={field.onChange}
-                defaultValue={field.value}
+                value={field.value ?? ""}
                 disabled={isLoading}
               >
                 <FormControl>
@@ -78,9 +91,11 @@ export function UnionOnboarding({
             </FormItem>
           )}
         />
-        {errorMessage && <p className="text-sm text-red-500">{errorMessage}</p>}
+        {errorMessage && (
+          <p className="text-destructive text-sm font-medium">{errorMessage}</p>
+        )}
         <Button type="submit" disabled={isLoading}>
-          {isLoading ? "Fullfører..." : "Fullfør"}
+          {isLoading ? "Submitting..." : "Submit"}
         </Button>
       </form>
     </Form>

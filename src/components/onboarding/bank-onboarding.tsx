@@ -2,7 +2,8 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
+import * as z from "zod";
+import { useEffect } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -20,30 +21,52 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-export const bankOnboardingSchema = z.object({
-  bank: z.enum(["nordea", "dnb", "storebrand", "sparebank1", "danske-bank"], {
-    message: "Du må velge en bank",
+const bankValues = [
+  "nordea",
+  "dnb",
+  "storebrand",
+  "sparebank1",
+  "danske-bank",
+] as const;
+
+export const bankOnboardingFormSchema = z.object({
+  bank: z.enum(bankValues, {
+    required_error: "You need to select a bank.",
   }),
 });
 
-export type BankOnboardingFormSchema = z.infer<typeof bankOnboardingSchema>;
+export type BankOnboardingFormSchema = z.infer<typeof bankOnboardingFormSchema>;
+
+interface BankOnboardingProps {
+  onSubmit: (data: BankOnboardingFormSchema) => void;
+  initialData?: Partial<BankOnboardingFormSchema>;
+  isLoading?: boolean;
+  errorMessage?: string | null;
+}
 
 export function BankOnboarding({
   onSubmit,
-}: {
-  onSubmit: (data: BankOnboardingFormSchema) => void;
-}) {
+  initialData,
+  isLoading,
+  errorMessage,
+}: BankOnboardingProps) {
   const form = useForm<BankOnboardingFormSchema>({
-    resolver: zodResolver(bankOnboardingSchema),
+    resolver: zodResolver(bankOnboardingFormSchema),
   });
+
+  useEffect(() => {
+    if (initialData) {
+      form.reset(initialData);
+    }
+  }, [initialData, form]);
 
   return (
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="flex flex-col gap-8 items-center justify-center text-center max-w-2xl mx-auto"
+        className="mx-auto flex max-w-2xl flex-col items-center justify-center gap-8 text-center"
       >
-        <h3 className="font-semibold text-2xl">Steg 2 av 5</h3>
+        <h3 className="text-2xl font-semibold">Steg 1 av 4</h3>
         <h1 className="text-6xl font-bold italic">Kom i gang</h1>
         <p className="text-xl font-normal">Hvilken bank har du boliglån i?</p>
         <FormField
@@ -51,7 +74,11 @@ export function BankOnboarding({
           name="bank"
           render={({ field }) => (
             <FormItem className="flex flex-col items-center">
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <Select
+                onValueChange={field.onChange}
+                value={field.value ?? ""}
+                disabled={isLoading}
+              >
                 <FormControl>
                   <SelectTrigger className="w-52">
                     <SelectValue placeholder="Velg" />
@@ -69,7 +96,12 @@ export function BankOnboarding({
             </FormItem>
           )}
         />
-        <Button type="submit">Gå videre</Button>
+        {errorMessage && (
+          <p className="text-destructive text-sm font-medium">{errorMessage}</p>
+        )}
+        <Button type="submit" disabled={isLoading}>
+          {isLoading ? "Submitting..." : "Continue"}
+        </Button>
       </form>
     </Form>
   );

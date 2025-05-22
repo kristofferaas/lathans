@@ -4,18 +4,21 @@ import { v } from "convex/values";
 /**
  * Get user loan details by Clerk User ID.
  */
-export const getUserLoanDetail = query({
+export const getUserLoan = query({
   args: {},
   returns: v.union(
     v.null(),
     v.object({
-      _id: v.id("userLoanDetails"),
+      _id: v.id("userLoan"),
       _creationTime: v.number(),
-      clerkUserId: v.string(),
-      name: v.string(),
-      amount: v.number(),
-      nominalRate: v.number(),
-      termYears: v.number(),
+      userId: v.string(),
+      loanName: v.optional(v.string()),
+      loanAmount: v.optional(v.number()),
+      nominalRate: v.optional(v.number()),
+      termYears: v.optional(v.number()),
+      bank: v.optional(v.string()),
+      screenshotStorageId: v.optional(v.id("_storage")),
+      union: v.optional(v.string()),
     }),
   ),
   handler: async (ctx) => {
@@ -26,8 +29,8 @@ export const getUserLoanDetail = query({
     }
 
     const userLoan = await ctx.db
-      .query("userLoanDetails")
-      .withIndex("by_clerkUserId", (q) => q.eq("clerkUserId", identity.subject))
+      .query("userLoan")
+      .withIndex("by_userId", (q) => q.eq("userId", identity.subject))
       .first();
     return userLoan;
   },
