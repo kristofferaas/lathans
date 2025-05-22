@@ -7,7 +7,6 @@ import { FileUp, Upload, CheckCircle2 } from "lucide-react";
 import type React from "react";
 import { useState, useEffect } from "react";
 import { Id } from "@convex/_generated/dataModel";
-// import { useUser } from "@clerk/clerk-react"; // Example: If using Clerk for user management
 
 export interface UploadScreenshotOnboardingProps {
   onSubmit: (storageId: string | null) => void;

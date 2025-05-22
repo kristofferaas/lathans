@@ -24,7 +24,7 @@ function LoanItem({
     <AccordionPrimitive.Item
       data-slot="loan-item"
       className={cn(
-        "border-border overflow-hidden rounded-md border",
+        "bg-card text-card-foreground overflow-hidden rounded-md border",
         className,
       )}
       {...props}

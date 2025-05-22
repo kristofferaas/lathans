@@ -178,6 +178,7 @@ function ContactForm() {
     </form>
   )
 }
+```
 
 ### Dialog/Modal Pattern
 

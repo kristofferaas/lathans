@@ -22,7 +22,7 @@ export function SignOutSection() {
   return (
     <div className="flex flex-col gap-6">
       <h2 className="text-4xl font-extrabold italic">Logg ut</h2>
-      <div className="rounded-lg border p-4">
+      <div className="bg-card text-card-foreground rounded-lg border p-4">
         <div className="flex flex-col gap-4">
           <div>
             <h3 className="text-lg font-semibold">Logg ut av kontoen din</h3>

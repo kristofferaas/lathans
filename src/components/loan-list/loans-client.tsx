@@ -157,10 +157,10 @@ const DetailItem: React.FC<DetailItemProps> = ({ label, value, type }) => {
 
   return (
     <div className="px-1 py-3 text-center">
-      <p className="text-sm font-semibold text-gray-800 md:text-base">
+      <p className="text-card-foreground text-sm font-semibold md:text-base">
         {displayValue}
       </p>
-      <p className="text-xs text-gray-500">{label}</p>
+      <p className="text-muted-foreground text-xs">{label}</p>
     </div>
   );
 };
