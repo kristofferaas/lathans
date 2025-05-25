@@ -1,4 +1,4 @@
-import { query, mutation } from "./_generated/server";
+import { query } from "./_generated/server";
 import { v } from "convex/values";
 
 /**
@@ -15,6 +15,7 @@ export const getUserLoan = query({
       loanName: v.optional(v.string()),
       loanAmount: v.optional(v.number()),
       nominalRate: v.optional(v.number()),
+      effectiveRate: v.optional(v.number()),
       termYears: v.optional(v.number()),
       bank: v.optional(v.string()),
       screenshotStorageId: v.optional(v.id("_storage")),
@@ -47,25 +48,11 @@ export const listPrincipalMortgageOffers = query({
       _creationTime: v.number(),
       name: v.string(),
       nominalRate: v.number(),
+      effectiveRate: v.number(),
       // Add other fields here if they were added to the schema
     }),
   ),
   handler: async (ctx) => {
     return await ctx.db.query("principalMortgageOffers").collect();
-  },
-});
-
-/**
- * (For Testing/Seeding) Add a new principal mortgage offer.
- */
-export const addPrincipalMortgageOffer = mutation({
-  args: {
-    name: v.string(),
-    nominalRate: v.number(),
-    // Add other fields corresponding to your schema if necessary
-  },
-  returns: v.id("principalMortgageOffers"),
-  handler: async (ctx, args) => {
-    return await ctx.db.insert("principalMortgageOffers", args);
   },
 });

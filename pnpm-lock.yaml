@@ -1,9 +1,5 @@
 lockfileVersion: '6.0'
 
-settings:
-  autoInstallPeers: true
-  excludeLinksFromLockfile: false
-
 dependencies:
   '@clerk/nextjs':
     specifier: ^6.19.3
@@ -106,6 +102,9 @@ devDependencies:
   tailwindcss:
     specifier: ^4.1.5
     version: 4.1.5
+  tsx:
+    specifier: ^4.19.4
+    version: 4.19.4
   tw-animate-css:
     specifier: ^1.2.9
     version: 1.2.9
@@ -244,7 +243,6 @@ packages:
     cpu: [ppc64]
     os: [aix]
     requiresBuild: true
-    dev: false
     optional: true
 
   /@esbuild/android-arm64@0.25.2:
@@ -253,7 +251,6 @@ packages:
     cpu: [arm64]
     os: [android]
     requiresBuild: true
-    dev: false
     optional: true
 
   /@esbuild/android-arm@0.25.2:
@@ -262,7 +259,6 @@ packages:
     cpu: [arm]
     os: [android]
     requiresBuild: true
-    dev: false
     optional: true
 
   /@esbuild/android-x64@0.25.2:
@@ -271,7 +267,6 @@ packages:
     cpu: [x64]
     os: [android]
     requiresBuild: true
-    dev: false
     optional: true
 
   /@esbuild/darwin-arm64@0.25.2:
@@ -280,7 +275,6 @@ packages:
     cpu: [arm64]
     os: [darwin]
     requiresBuild: true
-    dev: false
     optional: true
 
   /@esbuild/darwin-x64@0.25.2:
@@ -289,7 +283,6 @@ packages:
     cpu: [x64]
     os: [darwin]
     requiresBuild: true
-    dev: false
     optional: true
 
   /@esbuild/freebsd-arm64@0.25.2:
@@ -298,7 +291,6 @@ packages:
     cpu: [arm64]
     os: [freebsd]
     requiresBuild: true
-    dev: false
     optional: true
 
   /@esbuild/freebsd-x64@0.25.2:
@@ -307,7 +299,6 @@ packages:
     cpu: [x64]
     os: [freebsd]
     requiresBuild: true
-    dev: false
     optional: true
 
   /@esbuild/linux-arm64@0.25.2:
@@ -316,7 +307,6 @@ packages:
     cpu: [arm64]
     os: [linux]
     requiresBuild: true
-    dev: false
     optional: true
 
   /@esbuild/linux-arm@0.25.2:
@@ -325,7 +315,6 @@ packages:
     cpu: [arm]
     os: [linux]
     requiresBuild: true
-    dev: false
     optional: true
 
   /@esbuild/linux-ia32@0.25.2:
@@ -334,7 +323,6 @@ packages:
     cpu: [ia32]
     os: [linux]
     requiresBuild: true
-    dev: false
     optional: true
 
   /@esbuild/linux-loong64@0.25.2:
@@ -343,7 +331,6 @@ packages:
     cpu: [loong64]
     os: [linux]
     requiresBuild: true
-    dev: false
     optional: true
 
   /@esbuild/linux-mips64el@0.25.2:
@@ -352,7 +339,6 @@ packages:
     cpu: [mips64el]
     os: [linux]
     requiresBuild: true
-    dev: false
     optional: true
 
   /@esbuild/linux-ppc64@0.25.2:
@@ -361,7 +347,6 @@ packages:
     cpu: [ppc64]
     os: [linux]
     requiresBuild: true
-    dev: false
     optional: true
 
   /@esbuild/linux-riscv64@0.25.2:
@@ -370,7 +355,6 @@ packages:
     cpu: [riscv64]
     os: [linux]
     requiresBuild: true
-    dev: false
     optional: true
 
   /@esbuild/linux-s390x@0.25.2:
@@ -379,7 +363,6 @@ packages:
     cpu: [s390x]
     os: [linux]
     requiresBuild: true
-    dev: false
     optional: true
 
   /@esbuild/linux-x64@0.25.2:
@@ -388,7 +371,6 @@ packages:
     cpu: [x64]
     os: [linux]
     requiresBuild: true
-    dev: false
     optional: true
 
   /@esbuild/netbsd-arm64@0.25.2:
@@ -397,7 +379,6 @@ packages:
     cpu: [arm64]
     os: [netbsd]
     requiresBuild: true
-    dev: false
     optional: true
 
   /@esbuild/netbsd-x64@0.25.2:
@@ -406,7 +387,6 @@ packages:
     cpu: [x64]
     os: [netbsd]
     requiresBuild: true
-    dev: false
     optional: true
 
   /@esbuild/openbsd-arm64@0.25.2:
@@ -415,7 +395,6 @@ packages:
     cpu: [arm64]
     os: [openbsd]
     requiresBuild: true
-    dev: false
     optional: true
 
   /@esbuild/openbsd-x64@0.25.2:
@@ -424,7 +403,6 @@ packages:
     cpu: [x64]
     os: [openbsd]
     requiresBuild: true
-    dev: false
     optional: true
 
   /@esbuild/sunos-x64@0.25.2:
@@ -433,7 +411,6 @@ packages:
     cpu: [x64]
     os: [sunos]
     requiresBuild: true
-    dev: false
     optional: true
 
   /@esbuild/win32-arm64@0.25.2:
@@ -442,7 +419,6 @@ packages:
     cpu: [arm64]
     os: [win32]
     requiresBuild: true
-    dev: false
     optional: true
 
   /@esbuild/win32-ia32@0.25.2:
@@ -451,7 +427,6 @@ packages:
     cpu: [ia32]
     os: [win32]
     requiresBuild: true
-    dev: false
     optional: true
 
   /@esbuild/win32-x64@0.25.2:
@@ -460,7 +435,6 @@ packages:
     cpu: [x64]
     os: [win32]
     requiresBuild: true
-    dev: false
     optional: true
 
   /@eslint-community/eslint-utils@4.7.0(eslint@9.26.0):
@@ -2837,7 +2811,6 @@ packages:
       '@esbuild/win32-arm64': 0.25.2
       '@esbuild/win32-ia32': 0.25.2
       '@esbuild/win32-x64': 0.25.2
-    dev: false
 
   /escape-html@1.0.3:
     resolution: {integrity: sha512-NiSupZ4OeuGwr68lGIeym/ksIZMJodUGOSCZ/FSnTxcrekbvqrgdUxlJOMpijaKZVjAJrWrGs/6Jy8OMuyj9ow==}
@@ -3343,6 +3316,14 @@ packages:
     resolution: {integrity: sha512-Rx/WycZ60HOaqLKAi6cHRKKI7zxWbJ31MhntmtwMoaTeF7XFH9hhBp8vITaMidfljRQ6eYWCKkaTK+ykVJHP2A==}
     engines: {node: '>= 0.8'}
     dev: true
+
+  /fsevents@2.3.3:
+    resolution: {integrity: sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw==}
+    engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
+    os: [darwin]
+    requiresBuild: true
+    dev: true
+    optional: true
 
   /function-bind@1.1.2:
     resolution: {integrity: sha512-7XHNxH7qX9xG5mIwxkhumTox/MIRNcOgDrxWsMt2pAr23WHp6MrRlN7FBSFpCpr+oVO0F744iUgR82nJMfG2SA==}
@@ -5071,6 +5052,17 @@ packages:
   /tslib@2.8.1:
     resolution: {integrity: sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==}
 
+  /tsx@4.19.4:
+    resolution: {integrity: sha512-gK5GVzDkJK1SI1zwHf32Mqxf2tSJkNx+eYcNly5+nHvWqXUJYUkWBQtKauoESz3ymezAI++ZwT855x5p5eop+Q==}
+    engines: {node: '>=18.0.0'}
+    hasBin: true
+    dependencies:
+      esbuild: 0.25.2
+      get-tsconfig: 4.10.0
+    optionalDependencies:
+      fsevents: 2.3.3
+    dev: true
+
   /tw-animate-css@1.2.9:
     resolution: {integrity: sha512-9O4k1at9pMQff9EAcCEuy1UNO43JmaPQvq+0lwza9Y0BQ6LB38NiMj+qHqjoQf40355MX+gs6wtlR6H9WsSXFg==}
     dev: true
@@ -5344,3 +5336,7 @@ packages:
 
   /zod@3.24.4:
     resolution: {integrity: sha512-OdqJE9UDRPwWsrHjLN2F8bPxvwJBK22EHLWtanu0LSYr5YqzsaaW3RMgmjwr8Rypg5k+meEJdSPXJZXE/yqOMg==}
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false

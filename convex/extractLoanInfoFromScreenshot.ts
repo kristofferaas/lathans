@@ -10,7 +10,8 @@ import { zodResponseFormat } from "openai/helpers/zod";
 const LoanDetailsSchema = z.object({
   loanName: z.string().optional().nullable(),
   remainingLoanAmount: z.number().optional().nullable(),
-  nominalInterestRate: z.number().optional().nullable(), // Assuming rate is a percentage, e.g., 2.5 for 2.5%
+  nominalInterestRate: z.number().optional().nullable(), // Percentage value, e.g., 5.24 for 5.24%
+  effectiveInterestRate: z.number().optional().nullable(), // Percentage value, e.g., 5.24 for 5.24%
 });
 
 // Initialize OpenAI client to use OpenRouter
@@ -30,6 +31,7 @@ export const analyzeImageAndGetLoanDetails = action({
     loanName: v.optional(v.string()),
     remainingLoanAmount: v.optional(v.number()),
     nominalInterestRate: v.optional(v.number()),
+    effectiveInterestRate: v.optional(v.number()),
   }),
   handler: async (ctx, args) => {
     const imageBlob = await ctx.storage.get(args.storageId);
@@ -49,13 +51,14 @@ export const analyzeImageAndGetLoanDetails = action({
     The JSON object should contain the following optional fields:
     1. "loanName": The name or type of the loan (string).
     2. "remainingLoanAmount": The outstanding or remaining principal amount of the loan (numerical value, always positive. If the value is negative, remove the minus sign).
-    3. "nominalInterestRate": The nominal annual interest rate for the loan (numerical value as a float between 0 and 1, e.g., if it's 5.2%, return 0.052).
+    3. "nominalInterestRate": The nominal annual interest rate for the loan (numerical value as a percentage, e.g., if it's 5.2%, return 5.2).
+    4. "effectiveInterestRate": The effective annual interest rate for the loan (numerical value as a percentage, e.g., if it's 5.2%, return 5.2).
     
     All fields are optional. If a specific detail is not found or is unclear, return an empty JSON object: {}. If a field is present but its value is truly not known or applicable, you may set its value to null.
     Example valid responses: 
-    {"loanName": "Home Mortgage", "remainingLoanAmount": 150000, "nominalInterestRate": 0.0325}
-    {"loanName": "Student Loan", "remainingLoanAmount": 12000, "nominalInterestRate": null}
-    {"nominalInterestRate": 0.055}
+    {"loanName": "Home Mortgage", "remainingLoanAmount": 150000, "nominalInterestRate": 3.25, "effectiveInterestRate": 3.25}
+    {"loanName": "Student Loan", "remainingLoanAmount": 12000, "nominalInterestRate": null, "effectiveInterestRate": null}
+    {"nominalInterestRate": 5.5, "effectiveInterestRate": 5.5}
     {}
     Ensure the JSON is well-formed. Return ONLY valid JSON.`;
 
@@ -122,6 +125,7 @@ export const analyzeImageAndGetLoanDetails = action({
         loanName: validatedData.loanName ?? undefined,
         remainingLoanAmount: validatedData.remainingLoanAmount ?? undefined,
         nominalInterestRate: validatedData.nominalInterestRate ?? undefined,
+        effectiveInterestRate: validatedData.effectiveInterestRate ?? undefined,
       };
 
       return finalData;

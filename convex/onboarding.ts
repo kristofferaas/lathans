@@ -15,6 +15,7 @@ export const getUserLoan = query({
       loanName: v.optional(v.string()),
       loanAmount: v.optional(v.number()),
       nominalRate: v.optional(v.number()),
+      effectiveRate: v.optional(v.number()),
       termYears: v.optional(v.number()),
       union: v.optional(v.string()),
     }),
@@ -96,10 +97,14 @@ export const saveLoanDetails = mutation({
     loanName: v.string(),
     loanAmount: v.number(),
     nominalRate: v.number(),
+    effectiveRate: v.number(),
     termYears: v.number(),
   },
   returns: v.id("userLoan"),
-  handler: async (ctx, { loanName, loanAmount, nominalRate, termYears }) => {
+  handler: async (
+    ctx,
+    { loanName, loanAmount, nominalRate, effectiveRate, termYears },
+  ) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
       throw new Error("User not authenticated");
@@ -109,7 +114,13 @@ export const saveLoanDetails = mutation({
       .withIndex("by_userId", (q) => q.eq("userId", identity.subject))
       .unique();
 
-    const details = { loanName, loanAmount, nominalRate, termYears };
+    const details = {
+      loanName,
+      loanAmount,
+      nominalRate,
+      effectiveRate,
+      termYears,
+    };
 
     if (existingLoan) {
       await ctx.db.patch(existingLoan._id, details);
@@ -161,6 +172,7 @@ export const saveAnalyzedLoanDetails = mutation({
     loanName: v.optional(v.string()),
     remainingLoanAmount: v.optional(v.number()),
     nominalInterestRate: v.optional(v.number()),
+    effectiveInterestRate: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
@@ -186,6 +198,7 @@ export const saveAnalyzedLoanDetails = mutation({
         loanName: args.loanName,
         loanAmount: args.remainingLoanAmount,
         nominalRate: args.nominalInterestRate,
+        effectiveRate: args.effectiveInterestRate,
         screenshotStorageId: args.screenshotStorageId, // ensure screenshotId is also updated/set
       });
       console.log(
@@ -205,6 +218,7 @@ export const saveAnalyzedLoanDetails = mutation({
           loanName: args.loanName,
           loanAmount: args.remainingLoanAmount,
           nominalRate: args.nominalInterestRate,
+          effectiveRate: args.effectiveInterestRate,
           screenshotStorageId: args.screenshotStorageId,
         });
         console.log(
@@ -219,6 +233,7 @@ export const saveAnalyzedLoanDetails = mutation({
           loanName: args.loanName,
           loanAmount: args.remainingLoanAmount,
           nominalRate: args.nominalInterestRate,
+          effectiveRate: args.effectiveInterestRate,
         });
         console.log(
           `Saved new analyzed loan details with ID: ${loanId} for user ${userId}`,
@@ -238,6 +253,7 @@ export const getOrCreateUserLoanForOnboarding = mutation({
     loanName: v.optional(v.string()),
     loanAmount: v.optional(v.number()),
     nominalRate: v.optional(v.number()),
+    effectiveRate: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
@@ -259,6 +275,7 @@ export const getOrCreateUserLoanForOnboarding = mutation({
         loanName: args.loanName ?? userLoan.loanName,
         loanAmount: args.loanAmount ?? userLoan.loanAmount,
         nominalRate: args.nominalRate ?? userLoan.nominalRate,
+        effectiveRate: args.effectiveRate ?? userLoan.effectiveRate,
       });
       console.log(`Patched loan ${userLoan._id} for user ${userId}`);
       return userLoan._id;
@@ -270,6 +287,7 @@ export const getOrCreateUserLoanForOnboarding = mutation({
         loanName: args.loanName,
         loanAmount: args.loanAmount,
         nominalRate: args.nominalRate,
+        effectiveRate: args.effectiveRate,
       });
       console.log(`Created new loan with ID: ${newLoanId} for user ${userId}`);
       return newLoanId;

@@ -86,6 +86,7 @@ export function Onboarding() {
         loanName: data.loanName,
         loanAmount: data.loanAmount,
         nominalRate: data.nominalRate,
+        effectiveRate: data.effectiveRate,
         termYears: data.termYears,
       });
       setStep(4, { scroll: true, history: "push" });
@@ -158,6 +159,7 @@ export function Onboarding() {
                 loanName: userLoanData.loanName ?? "",
                 loanAmount: userLoanData.loanAmount ?? undefined,
                 nominalRate: userLoanData.nominalRate ?? undefined,
+                effectiveRate: userLoanData.effectiveRate ?? undefined,
                 termYears: userLoanData.termYears ?? undefined,
               }
             : undefined

@@ -1,6 +1,5 @@
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Suspense } from "react";
-import { LoansList, LoansLoading } from "@/components/loan-list/loans-client";
+import { LoansList } from "@/components/loan-list/loans-client";
 
 export default function LoansPage() {
   return (
@@ -26,9 +25,7 @@ export default function LoansPage() {
             om å matche tilbudet.
           </AlertDescription>
         </Alert>
-        <Suspense fallback={<LoansLoading />}>
-          <LoansList />
-        </Suspense>
+        <LoansList />
       </div>
     </main>
   );
