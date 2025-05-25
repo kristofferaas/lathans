@@ -1,6 +1,6 @@
 ---
 description: 
-globs: *.js,*.jsx,*.tsx,*.ts
+globs: 
 alwaysApply: false
 ---
 # Next.js Best Practices

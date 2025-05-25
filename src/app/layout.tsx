@@ -35,9 +35,11 @@ export default function RootLayout({
         >
           <ConvexClientProvider>
             <NuqsAdapter>
-              <div className="flex h-dvh flex-col">
-                <Header />
-                <div className="flex-grow">{children}</div>
+              <div className="flex min-h-dvh flex-col">
+                <div className="flex min-h-dvh flex-col">
+                  <Header />
+                  {children}
+                </div>
                 <Footer />
               </div>
             </NuqsAdapter>

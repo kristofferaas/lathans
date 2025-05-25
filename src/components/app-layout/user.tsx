@@ -1,23 +1,24 @@
 "use client";
 
-import { UserButton, SignInButton } from "@clerk/nextjs";
-import { Authenticated, Unauthenticated, AuthLoading } from "convex/react";
+import { useUser } from "@clerk/nextjs";
+import Link from "next/link";
 import { Button } from "../ui/button";
+import { Avatar } from "./avatar";
 
 export function User() {
-  return (
-    <>
-      <Unauthenticated>
-        <SignInButton mode="modal">
-          <Button>Prøv gratis</Button>
-        </SignInButton>
-      </Unauthenticated>
-      <AuthLoading>
-        <Button>Prøv gratis</Button>
-      </AuthLoading>
-      <Authenticated>
-        <UserButton />
-      </Authenticated>
-    </>
-  );
+  const { isLoaded, isSignedIn } = useUser();
+
+  if (!isLoaded) {
+    return <Button>Prøv gratis</Button>;
+  }
+
+  if (!isSignedIn) {
+    return (
+      <Button asChild>
+        <Link href="/onboarding">Prøv gratis</Link>
+      </Button>
+    );
+  }
+
+  return <Avatar href="/min-profil" />;
 }
