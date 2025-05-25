@@ -1,0 +1,25 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# What Rules to Use
+
+## Quick Decision Tree
+1. **React component?** → Use [react.mdc](mdc:.cursor/rules/react.mdc)
+2. **Styling with Tailwind?** → Use [tailwind.mdc](mdc:.cursor/rules/tailwind.mdc)
+3. **API/Backend code?** → Use [convex.mdc](mdc:.cursor/rules/convex.mdc)
+
+## Deep dive topics
+- [accessibility.mdc](mdc:.cursor/rules/accessibility.mdc) for UI work
+<!-- - `@performance` for optimization tasks
+- `@security` for auth/data handling -->
+
+## How to Apply
+1. Read user request
+2. Read relevant code
+3. Identify primary domain
+4. Select 1-2 most relevant rules
+5. Mention which rules you're using
+6. Apply patterns from selected rules only
+7. If new domain is identified, apply steps again
