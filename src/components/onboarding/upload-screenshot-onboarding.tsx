@@ -130,6 +130,7 @@ export function UploadScreenshotOnboarding({
             loanName: analysisResult.loanName,
             remainingLoanAmount: analysisResult.remainingLoanAmount,
             nominalInterestRate: analysisResult.nominalInterestRate,
+            effectiveInterestRate: analysisResult.effectiveInterestRate,
           });
           console.log("Loan details saved to Convex via onboarding mutation.");
         } catch (analysisOrSaveError) {

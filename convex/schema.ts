@@ -5,9 +5,20 @@ export default defineSchema({
   principalMortgageOffers: defineTable({
     name: v.string(),
     nominalRate: v.number(),
-    // Add any other fields that principalMortgageOffers might have from your Drizzle schema
-    // For now, these are the ones visibly used in createComparisonLoans for offer-specific data
-  }),
+    id: v.string(),
+    bankId: v.id("bank"),
+    effectiveRate: v.number(),
+    type: v.string(),
+    requireMembership: v.boolean(),
+    union: v.optional(v.string()),
+    requirePackage: v.boolean(),
+  }).index("by_offerId", ["id"]),
+
+  bank: defineTable({
+    name: v.string(),
+    url: v.string(),
+    bankId: v.string(),
+  }).index("by_bank_id", ["bankId"]),
 
   userLoan: defineTable({
     userId: v.string(),
@@ -16,6 +27,7 @@ export default defineSchema({
     loanName: v.optional(v.string()),
     loanAmount: v.optional(v.number()),
     nominalRate: v.optional(v.number()),
+    effectiveRate: v.optional(v.number()),
     termYears: v.optional(v.number()),
     union: v.optional(v.string()),
   }).index("by_userId", ["userId"]),

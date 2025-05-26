@@ -12,13 +12,15 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { MoneyInput } from "@/components/form/MoneyInput";
+import { MoneyInput } from "@/components/form/money-input";
+import { PercentInput } from "@/components/form/percent-input";
 import { useEffect } from "react";
 
 export const loanDetailsSchema = z.object({
   loanName: z.string().min(1, "Lånenavn er påkrevd"),
   loanAmount: z.coerce.number().min(1, "Loan amount must be greater than 0"),
   nominalRate: z.coerce.number({ message: "Nominell rente er påkrevd" }),
+  effectiveRate: z.coerce.number({ message: "Effektiv rente er påkrevd" }),
   termYears: z.coerce.number({ message: "Løpetid er påkrevd" }),
 });
 
@@ -47,6 +49,7 @@ export function UserLoanDetails({
         loanName: initialData.loanName ?? "",
         loanAmount: initialData.loanAmount ?? undefined,
         nominalRate: initialData.nominalRate ?? undefined,
+        effectiveRate: initialData.effectiveRate ?? undefined,
         termYears: initialData.termYears ?? undefined,
       });
     } else {
@@ -54,6 +57,7 @@ export function UserLoanDetails({
         loanName: "",
         loanAmount: undefined,
         nominalRate: undefined,
+        effectiveRate: undefined,
         termYears: undefined,
       });
     }
@@ -113,10 +117,12 @@ export function UserLoanDetails({
                 <FormItem>
                   <FormLabel>Nominell rente (%)</FormLabel>
                   <FormControl>
-                    <Input
+                    <PercentInput
                       {...field}
                       placeholder="Skriv inn nominell rente"
-                      type="number"
+                      onChange={(value: number | undefined) =>
+                        field.onChange(value === undefined ? null : value)
+                      }
                     />
                   </FormControl>
                   <FormMessage />
@@ -126,15 +132,17 @@ export function UserLoanDetails({
 
             <FormField
               control={form.control}
-              name="termYears"
+              name="effectiveRate"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Løpetid (år)</FormLabel>
+                  <FormLabel>Effektiv rente (%)</FormLabel>
                   <FormControl>
-                    <Input
+                    <PercentInput
                       {...field}
-                      placeholder="Skriv inn løpetid"
-                      type="number"
+                      placeholder="Skriv inn effektiv rente"
+                      onChange={(value: number | undefined) =>
+                        field.onChange(value === undefined ? null : value)
+                      }
                     />
                   </FormControl>
                   <FormMessage />
@@ -142,6 +150,24 @@ export function UserLoanDetails({
               )}
             />
           </div>
+
+          <FormField
+            control={form.control}
+            name="termYears"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Løpetid (år)</FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    placeholder="Skriv inn løpetid"
+                    type="number"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
         </form>
       </Form>
       {errorMessage && (

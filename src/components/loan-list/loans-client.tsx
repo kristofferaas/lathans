@@ -9,80 +9,9 @@ import {
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { calculateYearlyFixedRateMortgagePayment } from "@/lib/mortgage";
 import { api } from "@convex/_generated/api";
-import { Doc, Id } from "@convex/_generated/dataModel";
 import { useQuery } from "convex/react";
 import { useAuth } from "@clerk/nextjs";
-
-// Types
-type ComparisonLoan = {
-  id: string;
-  isCurrentDeal: boolean;
-  name: string;
-  nominalRate: number;
-  termYears: number;
-  amount: number;
-  annualDifference: number;
-  actualYearlyPayment: number;
-};
-
-type UserLoanDoc = Doc<"userLoan">;
-type ValidatedUserLoan = UserLoanDoc & {
-  _id: Id<"userLoan">;
-  loanName: string;
-  loanAmount: number;
-  nominalRate: number;
-  termYears: number;
-};
-
-type PrincipalMortgageOfferDoc = Doc<"principalMortgageOffers">;
-
-// Helper function
-function createComparisonLoans(
-  offers: PrincipalMortgageOfferDoc[],
-  userLoan: ValidatedUserLoan,
-): ComparisonLoan[] {
-  const userActualYearlyPayment = calculateYearlyFixedRateMortgagePayment(
-    userLoan.loanAmount,
-    userLoan.nominalRate / 12,
-    userLoan.termYears,
-  );
-
-  const comparisonLoans: ComparisonLoan[] = [
-    {
-      id: userLoan._id,
-      isCurrentDeal: true,
-      name: userLoan.loanName,
-      nominalRate: userLoan.nominalRate,
-      termYears: userLoan.termYears,
-      amount: userLoan.loanAmount,
-      annualDifference: 0,
-      actualYearlyPayment: userActualYearlyPayment,
-    },
-    ...offers.map((offer) => {
-      const offerActualYearlyPayment = calculateYearlyFixedRateMortgagePayment(
-        userLoan.loanAmount,
-        offer.nominalRate / 12,
-        userLoan.termYears,
-      );
-      return {
-        isCurrentDeal: false,
-        annualDifference: offerActualYearlyPayment - userActualYearlyPayment,
-        id: offer._id,
-        name: offer.name,
-        nominalRate: offer.nominalRate,
-        termYears: userLoan.termYears,
-        amount: userLoan.loanAmount,
-        actualYearlyPayment: offerActualYearlyPayment,
-      };
-    }),
-  ];
-
-  return comparisonLoans.sort(
-    (a, b) => a.annualDifference - b.annualDifference,
-  );
-}
 
 // Formatting Utilities
 const formatDisplayCurrency = (value?: number) => {
@@ -98,7 +27,7 @@ const formatDisplayCurrency = (value?: number) => {
 const formatDisplayRate = (value?: number) => {
   if (typeof value !== "number") return "N/A";
   return (
-    (value * 100).toLocaleString("nb-NO", {
+    value.toLocaleString("nb-NO", {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     }) + " %"
@@ -169,18 +98,12 @@ const DetailItem: React.FC<DetailItemProps> = ({ label, value, type }) => {
 export function LoansList() {
   const { userId, isLoaded: authIsLoaded } = useAuth();
 
-  const userLoanData = useQuery(api.loans.getUserLoan, userId ? {} : "skip");
-
-  const principalMortgageOffers = useQuery(
-    api.loans.listPrincipalMortgageOffers,
+  const comparisons = useQuery(
+    api.comparison.getLoanComparison,
     userId ? {} : "skip",
   );
 
-  if (
-    !authIsLoaded ||
-    userLoanData === undefined ||
-    principalMortgageOffers === undefined
-  ) {
+  if (!authIsLoaded || comparisons === undefined) {
     return <LoansLoading />;
   }
 
@@ -195,7 +118,7 @@ export function LoansList() {
     );
   }
 
-  if (userLoanData === null) {
+  if (comparisons === null) {
     return (
       <Alert variant="destructive">
         <AlertTitle>Lånedetaljer mangler</AlertTitle>
@@ -207,64 +130,17 @@ export function LoansList() {
     );
   }
 
-  if (
-    userLoanData.loanName === null ||
-    userLoanData.loanName === undefined ||
-    userLoanData.loanAmount === null ||
-    userLoanData.loanAmount === undefined ||
-    userLoanData.nominalRate === null ||
-    userLoanData.nominalRate === undefined ||
-    userLoanData.termYears === null ||
-    userLoanData.termYears === undefined
-  ) {
-    console.error(
-      "User loan data is missing essential fields for comparison.",
-      { userLoanData },
-    );
-    return (
-      <Alert variant="destructive">
-        <AlertTitle>Ufullstendige Lånedetaljer</AlertTitle>
-        <AlertDescription>
-          Dine lagrede lånedetaljer mangler nødvendig informasjon (navn, beløp,
-          rente, eller løpetid) for å kunne lage en sammenligning.
-        </AlertDescription>
-      </Alert>
-    );
-  }
-
-  const validatedUserLoan = userLoanData as ValidatedUserLoan;
-
-  if (!principalMortgageOffers) {
-    console.error(
-      "Unexpected state: principalMortgageOffers are not available for comparison.",
-      { principalMortgageOffers },
-    );
-    return (
-      <Alert variant="destructive">
-        <AlertTitle>Feil</AlertTitle>
-        <AlertDescription>
-          Kunne ikke laste tilbud for sammenligning.
-        </AlertDescription>
-      </Alert>
-    );
-  }
-
-  const comparisonLoans = createComparisonLoans(
-    principalMortgageOffers,
-    validatedUserLoan,
-  );
-
   return (
     <Loans type="single" collapsible>
-      {comparisonLoans.map((offer, index) => (
+      {comparisons.map((offer, index) => (
         <LoanItem value={offer.id} key={offer.id}>
           <LoanTrigger>
             <div className="min-w-0 flex-grow text-left">
               <p className="text-secondary-foreground text-lg font-semibold">
-                {index + 1}. plass
+                {index + 1}. {offer.name}
               </p>
               <p className="text-muted-foreground text_ellipsis overflow-hidden text-sm font-normal whitespace-nowrap md:text-base">
-                {offer.name}
+                {offer.bankName}
               </p>
             </div>
             <div
@@ -286,6 +162,11 @@ export function LoansList() {
               <DetailItem
                 label="Nominell rente"
                 value={offer.nominalRate}
+                type="rate"
+              />
+              <DetailItem
+                label="Effektiv rente"
+                value={offer.effectiveRate}
                 type="rate"
               />
               <DetailItem

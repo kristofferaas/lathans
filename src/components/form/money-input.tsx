@@ -37,7 +37,7 @@ const MoneyInput = ({
     } catch (e) {
       console.warn(
         `[MoneyInput] Invalid locale '${locale}' for number formatting. Using default locale.`,
-        e
+        e,
       );
       return new Intl.NumberFormat(undefined, {
         minimumFractionDigits: 0,
@@ -57,7 +57,7 @@ const MoneyInput = ({
     } catch (e) {
       console.warn(
         `[MoneyInput] Invalid currency '${currency}' or locale '${locale}' for currency style. Symbol might be incorrect.`,
-        e
+        e,
       );
       return null; // Indicates an issue, will fallback to currency code
     }
@@ -69,7 +69,7 @@ const MoneyInput = ({
       try {
         const parts = currencyInfoExtractor.formatToParts(0); // Use 0 or any number
         const foundSymbol = parts.find(
-          (part) => part.type === "currency"
+          (part) => part.type === "currency",
         )?.value;
         if (foundSymbol) {
           symbol = foundSymbol.trim();
@@ -77,7 +77,7 @@ const MoneyInput = ({
       } catch (e) {
         console.warn(
           `[MoneyInput] Could not extract currency symbol for ${currency} with locale ${locale}. Using currency code.`,
-          e
+          e,
         );
         // Symbol remains currency code
       }
@@ -109,7 +109,7 @@ const MoneyInput = ({
   const calculateCursorPosition = (
     prevValue: string,
     prevCursor: number | null,
-    nextValue: string
+    nextValue: string,
   ): number => {
     if (prevCursor === null) return nextValue.length;
 
@@ -172,7 +172,7 @@ const MoneyInput = ({
         } catch (error) {
           console.error(
             "[MoneyInput] Error formatting value on change:",
-            error
+            error,
           );
           nextDisplayValue = digitsOnly; // Fallback
         }
@@ -191,7 +191,7 @@ const MoneyInput = ({
     const newCursor = calculateCursorPosition(
       prevValue,
       prevCursorPos,
-      nextDisplayValue
+      nextDisplayValue,
     );
 
     requestAnimationFrame(() => {
@@ -237,7 +237,7 @@ const MoneyInput = ({
         className={cn("pr-12", className)} // Added padding for the suffix
       />
       {currencySymbol && (
-        <span className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-muted-foreground text-sm">
+        <span className="text-muted-foreground pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-sm">
           {currencySymbol}
         </span>
       )}
