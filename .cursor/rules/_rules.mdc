@@ -9,8 +9,10 @@ alwaysApply: true
 1. **React component?** → Use [react.mdc](mdc:.cursor/rules/react.mdc)
 2. **Styling with Tailwind?** → Use [tailwind.mdc](mdc:.cursor/rules/tailwind.mdc)
 3. **API/Backend code?** → Use [convex.mdc](mdc:.cursor/rules/convex.mdc)
+4. **Creating files or developing new features?** → Use [project-structure.mdc](mdc:.cursor/rules/project-structure.mdc)
 
 ## Deep dive topics
+- [project-structure.mdc](mdc:.cursor/rules/project-structure.mdc) for file naming, organization, and development philosophy
 - [accessibility.mdc](mdc:.cursor/rules/accessibility.mdc) for UI work
 <!-- - `@performance` for optimization tasks
 - `@security` for auth/data handling -->

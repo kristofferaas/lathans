@@ -1,0 +1,392 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Project Structure & Development Philosophy
+
+## Core Philosophy
+
+This project follows a **modern, scalable, and AI-friendly** development approach with clear separation of concerns, consistent naming conventions, and thoughtful architecture decisions.
+
+### Key Principles
+
+- **Consistency over cleverness** - Predictable patterns make code easier to understand and maintain
+- **Explicit over implicit** - Clear, descriptive names and obvious file organization
+- **Functional over object-oriented** - Prefer pure functions and immutable patterns
+- **Type safety first** - Leverage TypeScript's full potential for better developer experience
+- **Performance by default** - Make the right choice the easy choice
+
+## File Naming Conventions
+
+**CRITICAL RULE: ALL file names MUST use kebab-case with dashes (-) as delimiters**
+
+### ✅ CORRECT Examples
+```
+parse-banks.ts
+user-profile.tsx
+auth-layout.tsx
+api-utils.ts
+bank-data-processor.ts
+mortgage-calculator.tsx
+```
+
+### ❌ INCORRECT Examples
+```
+parseBanks.ts          // camelCase
+UserProfile.tsx        // PascalCase
+auth_layout.tsx        // snake_case
+apiUtils.ts           // camelCase
+BankDataProcessor.ts  // PascalCase
+```
+
+### File Extension Rules
+- **`.tsx`** - React components and JSX-containing files
+- **`.ts`** - TypeScript utilities, types, and non-JSX files
+- **`.js/.jsx`** - Only when TypeScript is not applicable (rare)
+
+## Project Structure
+
+```
+<root>/
+├── .cursor/rules/           # Cursor AI rules and guidelines
+├── convex/                  # Convex backend code (alias: @convex/)
+│   ├── functions/
+│   ├── schema/
+│   └── lib/
+├── src/                     # Next.js application source
+│   ├── app/                 # Next.js App Router
+│   │   ├── (auth)/         # Route groups for auth pages
+│   │   │   ├── components/ # Auth-specific components
+│   │   │   ├── sign-in/
+│   │   │   └── sign-up/
+│   │   ├── (dashboard)/    # Route groups for dashboard
+│   │   │   ├── components/ # Dashboard-specific components
+│   │   │   └── settings/
+│   │   ├── api/            # API routes
+│   │   ├── globals.css     # Global styles
+│   │   ├── layout.tsx      # Root layout
+│   │   └── page.tsx        # Home page
+│   ├── components/         # Reusable UI components
+│   │   ├── ui/            # shadcn/ui components
+│   │   ├── forms/         # Form components
+│   │   ├── layout/        # Layout components
+│   │   └── common/        # Common utility components
+│   └── lib/               # Reusable logic and utilities
+│       ├── utils.ts       # General utilities
+│       ├── validations.ts # Zod schemas
+│       ├── constants.ts   # App constants
+│       └── types.ts       # Shared TypeScript types
+├── public/                # Static assets
+├── scripts/              # Build and utility scripts
+└── package.json          # Dependencies (managed with pnpm)
+```
+
+## Directory Organization Rules
+
+### Route-Specific Components
+Components that are only used within a specific route/domain should live in that route's directory:
+
+```
+src/app/(auth)/components/
+├── login-form.tsx         # Only used in auth routes
+├── signup-wizard.tsx      # Only used in auth routes
+└── auth-layout.tsx        # Auth-specific layout
+
+src/app/(dashboard)/components/
+├── dashboard-nav.tsx      # Only used in dashboard
+├── stats-card.tsx         # Dashboard-specific component
+└── user-menu.tsx          # Dashboard user menu
+```
+
+### Shared Components
+Components used across multiple domains live in `src/components/`:
+
+```
+src/components/
+├── ui/                    # shadcn/ui components
+│   ├── button.tsx
+│   ├── input.tsx
+│   └── dialog.tsx
+├── layout/               # Layout components
+│   ├── header.tsx
+│   ├── footer.tsx
+│   └── sidebar.tsx
+├── forms/               # Reusable form components
+│   ├── form-field.tsx
+│   └── submit-button.tsx
+└── common/              # Other shared components
+    ├── loading-spinner.tsx
+    └── error-boundary.tsx
+```
+
+### Convex Organization
+Convex code lives in `<root>/convex/` with path alias `@convex/`:
+
+```
+convex/
+├── functions/           # Convex functions (queries, mutations, actions)
+│   ├── users.ts
+│   ├── banks.ts
+│   └── mortgages.ts
+├── schema/             # Database schema definitions
+│   ├── users.ts
+│   ├── banks.ts
+│   └── index.ts
+├── lib/               # Convex utilities and helpers
+│   ├── utils.ts
+│   └── validators.ts
+└── _generated/        # Auto-generated Convex files
+```
+
+## Package Management
+
+**ALWAYS use pnpm as the package manager, never npm or yarn**
+
+### ✅ CORRECT Commands
+```bash
+pnpm install
+pnpm add package-name
+pnpm dev
+pnpm build
+```
+
+### ❌ INCORRECT Commands
+```bash
+npm install        # Never use npm
+yarn add          # Never use yarn
+npm run dev       # Never use npm
+```
+
+## Code Formatting & Style
+
+### Prettier Configuration
+**ALWAYS use default Prettier configuration** - no custom overrides unless absolutely necessary.
+
+The project uses:
+- Default Prettier settings
+- `prettier-plugin-tailwindcss` for class sorting
+- Automatic formatting on save
+
+### Variable Naming
+Use **descriptive, intention-revealing names** with auxiliary verbs:
+
+### ✅ GOOD Examples
+```typescript
+const isLoading = true;
+const hasError = false;
+const canSubmit = form.isValid;
+const shouldShowModal = user.isAuthenticated;
+const didComplete = task.status === 'completed';
+const willExpire = subscription.expiresAt < Date.now();
+```
+
+### ❌ BAD Examples
+```typescript
+const loading = true;        // Not descriptive enough
+const error = false;         // Ambiguous
+const submit = form.isValid; // Unclear intent
+const modal = user.auth;     // Too abbreviated
+```
+
+## Documentation & Comments
+
+### Thoughtful Comments
+**ALWAYS write thoughtful comments when making assumptions** so the next developer can quickly understand the context and reasoning.
+
+### ✅ GOOD Comment Examples
+```typescript
+// We're using a 30-second cache here because bank data updates
+// infrequently but users expect fresh mortgage rates
+const BANK_DATA_CACHE_TTL = 30 * 1000;
+
+// Assumption: User can only have one active mortgage application
+// at a time. This may change in the future if we support multiple
+// simultaneous applications
+const activeMortgage = await getUserActiveMortgage(userId);
+
+// Edge case: Some banks don't provide all required fields in their API
+// We default to safe values and log for monitoring
+const interestRate = bankData.rate ?? DEFAULT_INTEREST_RATE;
+```
+
+### ✅ GOOD Function Comments
+```typescript
+/**
+ * Calculates monthly mortgage payment using standard amortization formula.
+ * 
+ * Assumptions:
+ * - Fixed interest rate for entire loan term
+ * - Monthly compounding (standard for most US mortgages)
+ * - No additional fees or insurance included
+ * 
+ * @param principal - Loan amount in dollars
+ * @param annualRate - Annual interest rate as decimal (e.g., 0.05 for 5%)
+ * @param termYears - Loan term in years
+ */
+function calculateMonthlyPayment(
+  principal: number,
+  annualRate: number,
+  termYears: number
+): number {
+  // Convert annual rate to monthly and years to months
+  const monthlyRate = annualRate / 12;
+  const totalPayments = termYears * 12;
+  
+  // Standard amortization formula
+  // M = P * [r(1+r)^n] / [(1+r)^n - 1]
+  const numerator = monthlyRate * Math.pow(1 + monthlyRate, totalPayments);
+  const denominator = Math.pow(1 + monthlyRate, totalPayments) - 1;
+  
+  return principal * (numerator / denominator);
+}
+```
+
+## Technology Stack
+
+### Core Technologies
+- **Next.js 15** with App Router
+- **React 19** with modern patterns
+- **TypeScript** with strict mode
+- **Tailwind CSS** for styling
+- **Convex** for backend/database
+- **Clerk** for authentication
+- **shadcn/ui** for UI components
+
+### Development Tools
+- **pnpm** for package management
+- **Prettier** for code formatting
+- **ESLint** for code linting
+- **TypeScript** for type checking
+
+## AI-Friendly Patterns
+
+### Clear Intent
+Structure code so AI assistants can easily understand context and intent:
+
+```typescript
+// Clear, descriptive function names
+export async function fetchUserMortgageApplications(userId: string) {
+  // Implementation
+}
+
+// Clear type definitions
+interface MortgageApplication {
+  id: string;
+  userId: string;
+  bankId: string;
+  status: 'draft' | 'submitted' | 'approved' | 'rejected';
+  createdAt: Date;
+  updatedAt: Date;
+}
+```
+
+### Consistent Patterns
+Use consistent patterns throughout the codebase:
+
+```typescript
+// Consistent error handling pattern
+export async function createMortgageApplication(data: CreateMortgageData) {
+  try {
+    const result = await convex.mutation(api.mortgages.create, data);
+    return { success: true, data: result };
+  } catch (error) {
+    console.error('Failed to create mortgage application:', error);
+    return { success: false, error: 'Failed to create application' };
+  }
+}
+```
+
+## Performance Considerations
+
+### Bundle Optimization
+- Use dynamic imports for large components
+- Implement proper code splitting
+- Optimize images with Next.js Image component
+
+### Database Queries
+- Use Convex queries efficiently
+- Implement proper pagination
+- Cache frequently accessed data
+
+## Security Best Practices
+
+### Environment Variables
+- Store sensitive data in environment variables
+- Use `@t3-oss/env-nextjs` for validation
+- Never commit secrets to version control
+
+### Input Validation
+- Use Zod for runtime validation
+- Validate all user inputs
+- Sanitize data before database operations
+
+## Testing Philosophy
+
+### Test Structure
+- Unit tests for utilities and pure functions
+- Integration tests for API routes
+- Component tests for UI components
+- End-to-end tests for critical user flows
+
+### Test Naming
+Use descriptive test names that explain the scenario:
+
+```typescript
+describe('calculateMonthlyPayment', () => {
+  it('should calculate correct payment for standard 30-year mortgage', () => {
+    // Test implementation
+  });
+  
+  it('should handle zero interest rate edge case', () => {
+    // Test implementation
+  });
+});
+```
+
+## Error Handling
+
+### Consistent Error Patterns
+```typescript
+// Use Result pattern for operations that can fail
+type Result<T, E = Error> = 
+  | { success: true; data: T }
+  | { success: false; error: E };
+
+// Consistent error boundaries in React
+export function ErrorBoundary({ children }: { children: React.ReactNode }) {
+  // Implementation
+}
+```
+
+## Deployment & CI/CD
+
+### Build Process
+- Use Next.js build optimization
+- Implement proper environment handling
+- Use Vercel for deployment (recommended)
+
+### Code Quality Gates
+- All code must pass TypeScript checks
+- All code must pass ESLint rules
+- All code must be formatted with Prettier
+- All tests must pass before deployment
+
+---
+
+## Quick Reference
+
+### File Creation Checklist
+- [ ] Use kebab-case naming
+- [ ] Place in correct directory based on usage scope
+- [ ] Add appropriate file extension (.tsx for React, .ts for utilities)
+- [ ] Include thoughtful comments for assumptions
+- [ ] Use descriptive variable names with auxiliary verbs
+- [ ] Follow established patterns in the codebase
+
+### Before Committing
+- [ ] Run `pnpm lint` to check for issues
+- [ ] Run `pnpm build` to ensure build succeeds
+- [ ] Verify all files use kebab-case naming
+- [ ] Check that comments explain any assumptions made
+- [ ] Ensure new components are in the correct directory
