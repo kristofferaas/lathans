@@ -38,6 +38,7 @@ export default function RootLayout({
               <div className="flex min-h-dvh flex-col">
                 <div className="flex min-h-dvh flex-col">
                   <Header />
+                  <span className="h-16" />
                   {children}
                 </div>
                 <Footer />
