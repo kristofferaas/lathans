@@ -1,9 +1,6 @@
 "use client";
 
-import {
-  BankOnboarding,
-  BankOnboardingFormSchema,
-} from "@/components/onboarding/bank-onboarding";
+import { BankOnboarding, BankOnboardingFormSchema } from "./bank-onboarding";
 import { parseAsInteger, useQueryState } from "nuqs";
 import { UnionOnboarding, UnionOnboardingFormSchema } from "./union-onboarding";
 import { LoanDetailsFormSchema, UserLoanDetails } from "./user-loan-details";
@@ -113,7 +110,7 @@ export function Onboarding() {
         return;
       }
       await saveUnionMutation({ union });
-      router.push("/loans");
+      router.push("/boliglan");
     } catch (e) {
       console.error("Failed to save union details:", e);
       setError(e instanceof Error ? e.message : "An unknown error occurred.");
