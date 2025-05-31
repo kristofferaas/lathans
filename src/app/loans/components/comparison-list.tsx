@@ -60,8 +60,7 @@ const formatCurrency = (value: number) => {
   return `${prefix}${numStr} kr/år`;
 };
 
-// Main Client Component
-export function LoansList() {
+export function ComparisonList() {
   const { userId, isLoaded: authIsLoaded } = useAuth();
 
   const comparisons = useQuery(
@@ -161,19 +160,22 @@ export function LoansList() {
 // Loading Skeleton Component
 export function LoansLoading() {
   return (
-    <div className="space-y-3">
+    <Loans type="single" collapsible>
       {[1, 2, 3, 4, 5].map((i) => (
-        <div
+        <LoanItem
+          value={`loading-${i}`}
           key={i}
-          className="flex items-center justify-between rounded-lg border border-gray-200 bg-white p-4 shadow-sm"
+          className="flex items-center justify-between p-5"
         >
-          <div>
-            <Skeleton className="mb-1.5 h-5 w-20" />
-            <Skeleton className="h-4 w-48" />
+          <div className="min-w-0 flex-grow text-left">
+            <p className="text-secondary-foreground text-lg font-semibold">
+              {i}. plass
+            </p>
+            <Skeleton className="mt-2 h-4 w-32 md:w-64" />
           </div>
-          <Skeleton className="h-8 w-28 rounded-full" />
-        </div>
+          <Skeleton className="h-8 w-24 rounded-full" />
+        </LoanItem>
       ))}
-    </div>
+    </Loans>
   );
 }

@@ -1,5 +1,5 @@
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { LoansList } from "./components/loans-client";
+import { ComparisonList } from "./components/comparison-list";
 
 export default function LoansPage() {
   return (
@@ -25,7 +25,7 @@ export default function LoansPage() {
             om å matche tilbudet.
           </AlertDescription>
         </Alert>
-        <LoansList />
+        <ComparisonList />
       </div>
     </main>
   );
