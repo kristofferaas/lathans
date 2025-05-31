@@ -12,6 +12,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { api } from "@convex/_generated/api";
 import { useQuery } from "convex/react";
 import { useAuth } from "@clerk/nextjs";
+import { Details, DetailItem } from "../../../components/loan-list/details";
+import { Badge } from "../../../components/loan-list/badge";
 
 // Formatting Utilities
 const formatDisplayCurrency = (value?: number) => {
@@ -56,42 +58,6 @@ const formatCurrency = (value: number) => {
     maximumFractionDigits: 0,
   });
   return `${prefix}${numStr} kr/år`;
-};
-
-// DetailItem Component
-interface DetailItemProps {
-  label: string;
-  value?: number;
-  type: "currency" | "rate" | "time" | "string";
-}
-
-const DetailItem: React.FC<DetailItemProps> = ({ label, value, type }) => {
-  let displayValue = "N/A";
-  if (value !== undefined) {
-    switch (type) {
-      case "currency":
-        displayValue = formatDisplayCurrency(value);
-        break;
-      case "rate":
-        displayValue = formatDisplayRate(value);
-        break;
-      case "time":
-        displayValue = formatDisplayTime(value);
-        break;
-      case "string":
-        displayValue = String(value);
-        break;
-    }
-  }
-
-  return (
-    <div className="px-1 py-3 text-center">
-      <p className="text-card-foreground text-sm font-semibold md:text-base">
-        {displayValue}
-      </p>
-      <p className="text-muted-foreground text-xs">{label}</p>
-    </div>
-  );
 };
 
 // Main Client Component
@@ -143,53 +109,47 @@ export function LoansList() {
                 {offer.bankName}
               </p>
             </div>
-            <div
-              className={`ml-4 shrink-0 rounded-full px-3 py-1.5 text-xs font-medium whitespace-nowrap md:text-sm ${
+            <Badge
+              variant={
                 offer.isCurrentDeal
-                  ? "bg-gray-200 text-gray-700"
+                  ? "gray"
                   : offer.annualDifference < 0
-                    ? "bg-green-100 text-green-700"
-                    : "bg-red-100 text-red-700"
-              }`}
+                    ? "green"
+                    : "red"
+              }
             >
               {offer.isCurrentDeal
                 ? "Min avtale"
                 : formatCurrency(offer.annualDifference)}
-            </div>
+            </Badge>
           </LoanTrigger>
           <LoanContent>
-            <div className="mb-6 grid grid-cols-2 md:grid-cols-3">
+            <Details>
               <DetailItem
                 label="Nominell rente"
-                value={offer.nominalRate}
-                type="rate"
+                value={formatDisplayRate(offer.nominalRate)}
               />
               <DetailItem
                 label="Effektiv rente"
-                value={offer.effectiveRate}
-                type="rate"
+                value={formatDisplayRate(offer.effectiveRate)}
               />
               <DetailItem
                 label="Nedbetalingstid"
-                value={offer.termYears}
-                type="time"
+                value={formatDisplayTime(offer.termYears)}
               />
               <DetailItem
                 label="Totalt lånebeløp"
-                value={offer.amount}
-                type="currency"
+                value={formatDisplayCurrency(offer.amount)}
               />
               <DetailItem
                 label="Total månedlig betaling"
-                value={offer.actualYearlyPayment / 12}
-                type="currency"
+                value={formatDisplayCurrency(offer.actualYearlyPayment / 12)}
               />
               <DetailItem
                 label="Total årlig betaling"
-                value={offer.actualYearlyPayment}
-                type="currency"
+                value={formatDisplayCurrency(offer.actualYearlyPayment)}
               />
-            </div>
+            </Details>
             <Button className="w-full">Bytt til dette lånet</Button>
           </LoanContent>
         </LoanItem>

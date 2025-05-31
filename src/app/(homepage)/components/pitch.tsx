@@ -4,6 +4,8 @@ import {
   Loans,
   LoanTrigger,
 } from "@/components/loan-list/loan-list";
+import { Badge } from "@/components/loan-list/badge";
+import { DetailItem, Details } from "@/components/loan-list/details";
 
 // Dummy loan data
 const dummyLoans = [
@@ -72,7 +74,7 @@ const dummyLoans = [
     badge: { text: "+2 400 kr/år", color: "red" },
     savings: -2400,
   },
-];
+] as const;
 
 export function Pitch() {
   return (
@@ -81,9 +83,7 @@ export function Pitch() {
       <div className="flex flex-col gap-12 md:col-span-2">
         {/* Pitch 1 */}
         <div className="flex flex-col items-start gap-4">
-          <div className="inline-flex items-center rounded-full bg-orange-100 px-4 py-2 text-sm font-medium text-orange-900">
-            Sparegaranti
-          </div>
+          <Badge variant="orange">Sparegaranti</Badge>
           <h2 className="text-foreground text-4xl font-bold">
             Du vil alltid spare penger
           </h2>
@@ -98,9 +98,7 @@ export function Pitch() {
         </div>
         {/* Pitch 2 */}
         <div className="flex flex-col items-start gap-4">
-          <div className="inline-flex items-center rounded-full bg-orange-100 px-4 py-2 text-sm font-medium text-orange-900">
-            3 min så er du klar
-          </div>
+          <Badge variant="orange">3 min så er du klar</Badge>
           <h2 className="text-foreground text-4xl font-bold">
             Så enkelt er det
           </h2>
@@ -128,59 +126,29 @@ export function Pitch() {
                     {loan.bank}
                   </p>
                 </div>
-                <div
-                  className={`ml-4 shrink-0 rounded-full px-3 py-1.5 text-xs font-medium whitespace-nowrap md:text-sm ${
-                    loan.badge.color === "gray"
-                      ? "bg-gray-200 text-gray-700"
-                      : loan.badge.color === "green"
-                        ? "bg-green-100 text-green-700"
-                        : loan.badge.color === "red"
-                          ? "bg-red-100 text-red-700"
-                          : ""
-                  }`}
-                >
-                  {loan.badge.text}
-                </div>
+                <Badge variant={loan.badge.color}>{loan.badge.text}</Badge>
               </LoanTrigger>
               <LoanContent>
-                <div className="mb-6 grid grid-cols-2 md:grid-cols-3">
-                  <div>
-                    <p className="font-semibold">{loan.nominalRate}</p>
-                    <p className="text-muted-foreground text-xs">
-                      Nominell rente
-                    </p>
-                  </div>
-                  <div>
-                    <p className="font-semibold">{loan.effectiveRate}</p>
-                    <p className="text-muted-foreground text-xs">
-                      Effektiv rente
-                    </p>
-                  </div>
-                  <div>
-                    <p className="font-semibold">{loan.term}</p>
-                    <p className="text-muted-foreground text-xs">
-                      Nedbetalingstid
-                    </p>
-                  </div>
-                  <div>
-                    <p className="font-semibold">{loan.totalAmount}</p>
-                    <p className="text-muted-foreground text-xs">
-                      Totalt lånebeløp
-                    </p>
-                  </div>
-                  <div>
-                    <p className="font-semibold">{loan.monthlyPayment}</p>
-                    <p className="text-muted-foreground text-xs">
-                      Total månedlig betaling
-                    </p>
-                  </div>
-                  <div>
-                    <p className="font-semibold">{loan.yearlyPayment}</p>
-                    <p className="text-muted-foreground text-xs">
-                      Total årlig betaling
-                    </p>
-                  </div>
-                </div>
+                <Details>
+                  <DetailItem label="Nominell rente" value={loan.nominalRate} />
+                  <DetailItem
+                    label="Effektiv rente"
+                    value={loan.effectiveRate}
+                  />
+                  <DetailItem label="Nedbetalingstid" value={loan.term} />
+                  <DetailItem
+                    label="Totalt lånebeløp"
+                    value={loan.totalAmount}
+                  />
+                  <DetailItem
+                    label="Total månedlig betaling"
+                    value={loan.monthlyPayment}
+                  />
+                  <DetailItem
+                    label="Total årlig betaling"
+                    value={loan.yearlyPayment}
+                  />
+                </Details>
               </LoanContent>
             </LoanItem>
           ))}

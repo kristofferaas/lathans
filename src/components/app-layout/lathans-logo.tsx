@@ -5,7 +5,10 @@ export const LathansLogo: typeof Link = ((props) => {
   return (
     <Link
       {...props}
-      className={cn("font-extrabold text-2xl italic", props.className)}
+      className={cn(
+        "text-xl font-extrabold italic md:text-2xl",
+        props.className,
+      )}
     >
       Lathans.
     </Link>

@@ -1,12 +1,11 @@
+import { Badge } from "@/components/loan-list/badge";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
 export function Hero() {
   return (
-    <section className="mx-auto flex max-w-4xl flex-col gap-8 px-6 text-center">
-      <div className="mx-auto inline-flex items-center rounded-full bg-orange-100 px-4 py-2 text-sm font-medium text-orange-900">
-        Automatisk bytte av boliglån
-      </div>
+    <section className="mx-auto flex max-w-4xl flex-col items-center gap-8 px-6 text-center">
+      <Badge variant="orange">Automatisk bytte av boliglån</Badge>
       <h1 className="text-foreground text-4xl font-bold tracking-tight italic sm:text-6xl lg:text-7xl">
         Er du også en lathans som aldri sjekker renta?
       </h1>

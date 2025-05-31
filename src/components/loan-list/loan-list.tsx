@@ -64,7 +64,12 @@ function LoanContent({
       className="data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down overflow-hidden"
       {...props}
     >
-      <div className={cn("border-border border-t p-4 text-sm", className)}>
+      <div
+        className={cn(
+          "border-border flex flex-col gap-6 border-t p-4 text-sm",
+          className,
+        )}
+      >
         {children}
       </div>
     </AccordionPrimitive.Content>

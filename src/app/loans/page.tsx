@@ -1,5 +1,5 @@
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { LoansList } from "@/components/loan-list/loans-client";
+import { LoansList } from "./components/loans-client";
 
 export default function LoansPage() {
   return (
