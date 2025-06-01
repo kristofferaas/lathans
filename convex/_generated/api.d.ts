@@ -19,6 +19,7 @@ import type * as extractLoanInfoFromScreenshot from "../extractLoanInfoFromScree
 import type * as files from "../files.js";
 import type * as init_data from "../init/data.js";
 import type * as init_init from "../init/init.js";
+import type * as loanSwitch from "../loanSwitch.js";
 import type * as loans from "../loans.js";
 import type * as onboarding from "../onboarding.js";
 import type * as principalMortgageOffers from "../principalMortgageOffers.js";
@@ -38,6 +39,7 @@ declare const fullApi: ApiFromModules<{
   files: typeof files;
   "init/data": typeof init_data;
   "init/init": typeof init_init;
+  loanSwitch: typeof loanSwitch;
   loans: typeof loans;
   onboarding: typeof onboarding;
   principalMortgageOffers: typeof principalMortgageOffers;

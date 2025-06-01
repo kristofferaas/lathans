@@ -23,8 +23,11 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@clerk/nextjs";
 import { api } from "@convex/_generated/api";
-import { useQuery } from "convex/react";
-import Link from "next/link";
+import { Id } from "@convex/_generated/dataModel";
+import { useQuery, useMutation } from "convex/react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { Loader2Icon } from "lucide-react";
 
 // Formatting Utilities
 const formatDisplayCurrency = (value?: number) => {
@@ -86,9 +89,87 @@ interface LoanComparisonItemProps {
     actualYearlyPayment: number;
   };
   index: number;
+  activeLoanSwitch: {
+    _id: string;
+    _creationTime: number;
+    userId: string;
+    targetOfferId: string;
+    status: "pending" | "cancelled" | "completed";
+    targetLoanName: string;
+  } | null;
 }
 
-function LoanComparisonItem({ offer, index }: LoanComparisonItemProps) {
+function LoanComparisonItem({
+  offer,
+  index,
+  activeLoanSwitch,
+}: LoanComparisonItemProps) {
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const router = useRouter();
+  const startLoanSwitch = useMutation(api.loanSwitch.startLoanSwitch);
+  const cancelLoanSwitch = useMutation(api.loanSwitch.cancelLoanSwitch);
+
+  const isCurrentlyBeingSwitched = activeLoanSwitch?.targetOfferId === offer.id;
+  const hasActiveSwitchToOtherLoan =
+    activeLoanSwitch && !isCurrentlyBeingSwitched;
+
+  const handleStartSwitch = async () => {
+    try {
+      // For mortgage offers, offer.id is the _id from principalMortgageOffers
+      // For the current deal, we skip since it should be disabled
+      if (offer.isCurrentDeal) {
+        return;
+      }
+
+      await startLoanSwitch({
+        targetOfferId: offer.id as Id<"principalMortgageOffers">,
+      });
+      setIsDialogOpen(false);
+      router.push("/gratulerer");
+    } catch (error) {
+      console.error("Failed to start loan switch:", error);
+    }
+  };
+
+  const handleCancelSwitch = async () => {
+    try {
+      await cancelLoanSwitch({});
+      setIsDialogOpen(false);
+    } catch (error) {
+      console.error("Failed to cancel loan switch:", error);
+    }
+  };
+
+  const getBadgeVariantAndText = () => {
+    if (offer.isCurrentDeal) {
+      return { variant: "gray" as const, text: "Min avtale" };
+    }
+    if (offer.annualDifference < 0) {
+      return {
+        variant: "green" as const,
+        text: formatCurrency(offer.annualDifference),
+      };
+    }
+    return {
+      variant: "red" as const,
+      text: formatCurrency(offer.annualDifference),
+    };
+  };
+
+  const { variant, text } = getBadgeVariantAndText();
+
+  const getButtonText = () => {
+    if (offer.isCurrentDeal) {
+      return "Dette er ditt nåværende lån";
+    }
+    if (hasActiveSwitchToOtherLoan) {
+      return "Bytt til dette lånet i stedet";
+    }
+    return "Bytt til dette lånet";
+  };
+
+  const isButtonDisabled = offer.isCurrentDeal;
+
   return (
     <LoanItem value={offer.id} key={offer.id}>
       <LoanTrigger>
@@ -100,19 +181,7 @@ function LoanComparisonItem({ offer, index }: LoanComparisonItemProps) {
             {offer.bankName}
           </p>
         </div>
-        <Badge
-          variant={
-            offer.isCurrentDeal
-              ? "gray"
-              : offer.annualDifference < 0
-                ? "green"
-                : "red"
-          }
-        >
-          {offer.isCurrentDeal
-            ? "Min avtale"
-            : formatCurrency(offer.annualDifference)}
-        </Badge>
+        <Badge variant={variant}>{text}</Badge>
       </LoanTrigger>
       <LoanContent>
         <Details>
@@ -141,34 +210,54 @@ function LoanComparisonItem({ offer, index }: LoanComparisonItemProps) {
             value={formatDisplayCurrency(offer.actualYearlyPayment)}
           />
         </Details>
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button className="w-full">Bytt til dette lånet</Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>
-                Er du sikker på at du vil bytte til dette lånet?
-              </DialogTitle>
-              <DialogDescription>
-                Vi vil kontakte banken og bytte automatisk for deg. Du trenger
-                ikke gjøre noe, og kan når som helst avbryte prosessen.
-              </DialogDescription>
-            </DialogHeader>
-            <DialogFooter className="flex sm:justify-between">
-              <DialogClose asChild>
-                <Button variant="outline">Avbryt</Button>
-              </DialogClose>
-              <DialogClose asChild>
-                <Button asChild>
-                  <Link href={`/gratulerer`}>
-                    Ja, jeg vil bytte til dette lånet
-                  </Link>
-                </Button>
-              </DialogClose>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+
+        {isCurrentlyBeingSwitched ? (
+          <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-between">
+            <Button variant="outline" onClick={handleCancelSwitch}>
+              Avbryt bytte
+            </Button>
+            <Button disabled>
+              <Loader2Icon className="animate-spin" />
+              Bytter boliglån
+            </Button>
+          </div>
+        ) : !isButtonDisabled ? (
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button className="w-full">{getButtonText()}</Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>
+                  {hasActiveSwitchToOtherLoan
+                    ? "Bytt til et annet lån?"
+                    : "Bekreft lånebytte"}
+                </DialogTitle>
+                <DialogDescription>
+                  {hasActiveSwitchToOtherLoan
+                    ? `Du har allerede startet en bytte til ${activeLoanSwitch.targetLoanName}. Vil du bytte til dette lånet i stedet?`
+                    : "Vi vil kontakte banken og bytte automatisk for deg. Du trenger ikke gjøre noe, og kan når som helst avbryte prosessen."}
+                </DialogDescription>
+              </DialogHeader>
+              <DialogFooter className="flex sm:justify-between">
+                <DialogClose asChild>
+                  <Button variant="outline">Avbryt</Button>
+                </DialogClose>
+                <DialogClose asChild>
+                  <Button onClick={handleStartSwitch}>
+                    {hasActiveSwitchToOtherLoan
+                      ? "Ja, bytt til dette lånet i stedet"
+                      : "Ja, jeg vil bytte til dette lånet"}
+                  </Button>
+                </DialogClose>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        ) : (
+          <Button className="w-full" disabled>
+            {getButtonText()}
+          </Button>
+        )}
       </LoanContent>
     </LoanItem>
   );
@@ -182,7 +271,16 @@ export function ComparisonList() {
     userId ? {} : "skip",
   );
 
-  if (!authIsLoaded || comparisons === undefined) {
+  const activeLoanSwitch = useQuery(
+    api.loanSwitch.getActiveLoanSwitch,
+    userId ? {} : "skip",
+  );
+
+  if (
+    !authIsLoaded ||
+    comparisons === undefined ||
+    activeLoanSwitch === undefined
+  ) {
     return <LoansLoading />;
   }
 
@@ -212,7 +310,12 @@ export function ComparisonList() {
   return (
     <Loans type="single" collapsible>
       {comparisons.map((offer, index) => (
-        <LoanComparisonItem key={offer.id} offer={offer} index={index} />
+        <LoanComparisonItem
+          key={offer.id}
+          offer={offer}
+          index={index}
+          activeLoanSwitch={activeLoanSwitch}
+        />
       ))}
     </Loans>
   );

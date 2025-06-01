@@ -31,4 +31,17 @@ export default defineSchema({
     termYears: v.optional(v.number()),
     union: v.optional(v.string()),
   }).index("by_userId", ["userId"]),
+
+  loanSwitch: defineTable({
+    userId: v.string(),
+    targetOfferId: v.id("principalMortgageOffers"), // Reference to the loan offer user wants to switch to
+    status: v.union(
+      v.literal("pending"),
+      v.literal("cancelled"),
+      v.literal("completed"),
+    ),
+  })
+    .index("by_userId_and_status", ["userId", "status"])
+    .index("by_userId", ["userId"])
+    .index("by_targetOfferId", ["targetOfferId"]),
 });
